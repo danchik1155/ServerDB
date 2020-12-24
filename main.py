@@ -65,6 +65,7 @@ def index():
 @app.route('/form')
 def form():
     return render_template("form.html")
+#Проверка на сохранение
 
 @app.route('/users')
 def users():
