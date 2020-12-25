@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+
+    <link rel="stylesheet" href="stylelog_reg.css">
+    <link rel="stylesheet" href="stylemod.css">
+
+    <title>Личный кабинет</title>
+
+</head>
+
+<body class="back">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="">Личный кабинет</a>
+                </li>
+                <!-- Ссылки на вызов модальных окон -->
+                <li class="nav-item">
+                    <a href="#win1" class="button nav-link">Продажа</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#win2" class="button nav-link">Создание пользователя</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#win3" class="button nav-link">Добавление книги</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="title text-center font-weight-bold font-italic">Данные о пользователе</h2>
+                <div class="form-group pt-3">
+                    <p class="pt-2">ФИО: {{ fio }}</p> /здесь переменная/
+                </div>
+                <div class="form-group">
+                    <p>Роль: {{ role }}</p> /здесь переменная/
+                </div>
+                <div class="form-group">
+                    <p>Счёт: {{ account }}</p> /здесь переменная/
+                </div>
+                <div class="form-group">
+                    <p>Книги: {{ book }}</p> /здесь переменная/
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно №1 -->
+    <a href="#x" class="overlay" id="win1"></a>
+    <div class="popup">
+        <a class="close" title="Закрыть" href="#close"></a>
+        <div class="heig">
+            <div>
+                <div class="form-group pt-3">
+                    <p class="pt-2">ФИО: {{ fio }}</p> /здесь переменная/
+                </div>
+                <div class="form-group">
+                    <p class="pt-2">Каталог книг: {{ catalog }}</p> /здесь переменная/
+                </div>
+                <form action="http://127.0.0.1:5000/prod" method="post" name="form" class="py-3 back_w">
+                    <div class="form-group px-3">
+                        <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
+                        <input type="text" class="form-control form-control-lg" id="IDBook">
+                    </div>
+                    <div class="form-group px-3 mb-0">
+                        <label for="InputTel" class="col-form-label col-form-label-lg pt-0">Телефон</label>
+                        <input type="text" name="tel" class="phone form-control form-control-lg" id="InputTel">
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="price" class="col-form-label col-form-label-md pt-0">Стоимость книги</label>
+                        <input type="number" class="form-control form-control-lg" id="price">
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="date" class="col-form-label col-form-label-md pt-0">Дата</label>
+                        <input type="data" name="calend" class="form-control form-control-lg" id="date">
+                    </div>
+                    <button type="submit" class="btn text-white w-25 mt-2 ml-3" style="background-color: #15a98b;">
+                        Продать
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно №2 -->
+    <a href="#x" class="overlay" id="win2"></a>
+    <div class="popup">
+        <a class="close" title="Закрыть" href="#close"></a>
+        <div class="heig_two">
+            <div>
+                <div class="form-group px-3 mb-3">
+                    <label for="InputRole" class="col-form-label col-form-label-lg pt-0">Должность</label>
+                    <select class="form-control form-control-lg" id="InputRole">
+                        <option name="Продавец-консультант">Продавец-консультант</option>
+                        <option name="Менеджер">Менеджер</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn text-white w-25 mt-2 ml-3" style="background-color: #15a98b;">
+                    Создать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно №3 -->
+    <a href="#x" class="overlay" id="win3"></a>
+    <div class="popup">
+        <a class="close" title="Закрыть" href="#close"></a>
+        <div class="heig">
+            <div>
+                <form action="http://127.0.0.1:5000/vns" method="post" name="form" class="py-3 back_w">
+                    <div class="form-group px-3">
+                        <label for="NameBook" class="col-form-label col-form-label-md pt-0">Название книги</label>
+                        <input type="text" class="form-control form-control-lg" id="NameBook">
+                    </div>
+                    <div class="form-group px-3 mb-0">
+                        <label for="InputBook" class="col-form-label col-form-label-lg pt-0">Дата выпуска</label>
+                        <input type="date" class="form-control form-control-lg" id="InputBook">
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="price" class="col-form-label col-form-label-md pt-0">Стоимость книги</label>
+                        <input type="number" class="form-control form-control-lg" id="price">
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="Isd" class="col-form-label col-form-label-md pt-0">Издатель</label>
+                        <input type="text" class="form-control form-control-lg" id="Isd">
+                    </div>
+                    <button type="submit" class="btn text-white w-25 mt-2 ml-3" style="background-color: #15a98b;">
+                        Добавить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        $(".phone").mask("+7(999)999-9999");
+
+    </script>
+    <script>
+        var d = new Date();
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var name_input = document.getElementById('date')
+        name_input.value = day + "-" + month + "-" + year;
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+.back {
+    background-color: #f9f9f9;
+}
+
+.back_w {
+    background-color: #fff;
+}
+
+.form {
+    border: 2px solid #c0c0c0;
+    border-radius: 10px;
+}
+
+.title {
+    margin-top: 18%;
+    font-family: "Georgia";
+    color: #15a98b;
+}
+
+.form-control {
+    border-radius: 3px;
+    border: 2px solid #c9c9c9;
+}
+
+.btn {
+    border-radius: 5px;
+    font-size: 19px;
+    line-height: 32px;
+    font-family: "Georgia";
+    background-color: #15a98b;
+}
+
+.emblem {
+    width: 60px;
+    margin-top: 14%;
+}
+
+@media screen and (min-width: 768px) {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+.navbar {
+    font-family: "Georgia";
+    padding: 0 0 0 20px;
+}
+
+li.nav-item.active,
+li.nav-item:hover,
+li.nav-item:focus {
+    background-color: rgb(21, 169, 140);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #fff;
+    padding: 12px 15px;
+}
+
+li.nav-item.active a.nav-link,
+li.nav-item:hover a.nav-link,
+li.nav-item:focus a.nav-link,
+li.nav-item a.nav-link:hover,
+li.nav-item a.nav-link:focus {
+    color: #fff !important
+}
+
+.form-group {
+    font-size: 20px;
+    line-height: 32px;
+    font-family: "Open Sans";
+}
