@@ -5,8 +5,9 @@ import psycopg2
 app = Flask(__name__)
 
 @app.route("/")
-def hello():
-    return "Hello, World!"
+def cabinet():
+    return render_template('cabinet.html', fio='Jerry')
+
 @app.route("/status")
 def status():
     return {'status':'true', 'name':'TG', 'time': time.asctime()}
