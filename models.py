@@ -1,10 +1,18 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from flask_table import Table, Col
 from sqlalchemy import ForeignKey
 
 # from main import manager
 
 db = SQLAlchemy()
+
+class ItemTable(Table):
+    fio = Col('FIO')
+    email = Col('Email')
+    phone = Col('Phone')
+    amount = Col('Amount')
+
 
 class InfoModel(db.Model):
     __tablename__ = 'info_table'
@@ -88,3 +96,11 @@ class Card(db.Model):
         self.id_clients = id_clients
         self.hash_card = hash_card
         self.amount = amount
+
+class Results(Table):
+    id = Col('Id', show=False)
+    artist = Col('Artist')
+    title = Col('Title')
+    release_date = Col('Release Date')
+    publisher = Col('Publisher')
+    media_type = Col('Media')

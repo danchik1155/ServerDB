@@ -4,9 +4,8 @@ import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_migrate import Migrate
 
-from models import db, InfoModel, Clients, Contactdetailsclients, Secretdate, Card
+from models import db, Clients, Contactdetailsclients, Secretdate, Card, ItemTable
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/cursach"
@@ -14,7 +13,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'so so very very secret'
 db.init_app(app)
 manager = LoginManager(app)
-migrate = Migrate(app, db)
 
 
 def getinffromtable(table_name):
@@ -50,7 +48,13 @@ def index():
 
 @app.route('/form')
 def form():
-    return render_template("form.html")
+    user = db.session.query(Clients, Contactdetailsclients, Card).all()
+    cl_items = Clients.query.all()
+    con_items = Contactdetailsclients.query.all()
+    car_items = Card.query.all()
+    items = cl_items + con_items + car_items
+    table = ItemTable(items)
+    return render_template("form.html",tryy=cl_items)
 
 
 @app.route('/users')
@@ -90,20 +94,6 @@ def login_pg():
             flash('Login or password is not correct')
 
     return render_template('login.html')
-    # if request.method == 'GET':
-    #     return render_template('login.html')
-    #
-    # if request.method == 'POST':
-    #     name = request.form['name']
-    #     age = request.form['age']
-    #     new_user = InfoModel(name=name, age=age)
-    #     db.session.add(new_user)
-    #     db.session.commit()
-    #     return f"Done!!"
-
-
-# def login():
-#     return render_template('login.html')
 
 @app.route("/book")
 def book():
@@ -185,7 +175,6 @@ def redirect_to_signin(response):
 @manager.user_loader
 def load_user(user_id):
     return Clients.query.get(user_id)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

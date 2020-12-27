@@ -3,7 +3,6 @@ CREATE TABLE roles(
     name VARCHAR(45) NOT NULL
 );
 
--- какая должность
 CREATE TABLE posit (
     id_position SERIAL PRIMARY KEY,
     id_role INT UNIQUE NOT NULL REFERENCES roles (id_role),
@@ -11,7 +10,6 @@ CREATE TABLE posit (
     salary FLOAT NOT NULL
 );
 
--- тригер на инсерт
 CREATE TABLE clients (
     id_clients SERIAL PRIMARY KEY,
     email VARCHAR(30) NOT NULL UNIQUE,
@@ -21,29 +19,24 @@ CREATE TABLE clients (
     id_role INT UNIQUE NOT NULL REFERENCES roles (id_role)
 );
 
--- тригер на инсерт
 CREATE TABLE contact_details_clients (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
     phone VARCHAR(20) NOT NULL,
     company VARCHAR(40) NOT NULL
 );
 
--- тригер на инсерт
 CREATE TABLE secret_date (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
     hash_password VARCHAR(100) NOT NULL,
     hash_address VARCHAR(200) NOT NULL
 );
 
--- тригер на инсерт
 CREATE TABLE card (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
     hash_card VARCHAR(100) NOT NULL,
     amount FLOAT NOT NULL
 );
 
--- взаимосвязь
--- тригер на инсерт
 CREATE TABLE staff (
     id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients),
     id_position INT UNIQUE NOT NULL REFERENCES posit (id_position)
