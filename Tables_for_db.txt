@@ -3,48 +3,55 @@ CREATE TABLE role(
     name VARCHAR(45) NOT NULL
 );
 
-CREATE TABLE publishers (
-    id_publisher SERIAL PRIMARY KEY,
-    publishers_name VARCHAR(45) NOT NULL
+-- какая должность
+CREATE TABLE posit (
+    id_position SERIAL PRIMARY KEY,
+    id_role INT UNIQUE NOT NULL REFERENCES role (id_role),
+    job_title VARCHAR(30) NOT NULL,
+    salary FLOAT NOT NULL
 );
 
-CREATE TABLE card (
-    id_clients SERIAL PRIMARY KEY,
-    shifrcard VARCHAR(45) NOT NULL,
-    amount FLOAT NOT NULL
-);
-
-CREATE TABLE contact_details_clients (
-    id_clients SERIAL PRIMARY KEY,
-    email VARCHAR(30) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    company VARCHAR(40) NOT NULL
-);
-
-CREATE TABLE secret_date (
-    id_clients SERIAL PRIMARY KEY,
-    hache_password INT NOT NULL,
-    adress VARCHAR(200) NOT NULL
-);
-
+-- тригер на инсерт
 CREATE TABLE clients (
-    id_clients SERIAL PRIMARY KEY,          
+    id_clients SERIAL PRIMARY KEY,
     FIO VARCHAR(100) NOT NULL,
     created DATE NOT NULL,
     DOB DATE NOT NULL,
     id_role INT UNIQUE NOT NULL REFERENCES role (id_role)
 );
 
-CREATE TABLE posit (
-    id_position SERIAL PRIMARY KEY,
-    id_role INT NOT NULL REFERENCES clients (id_role),
-    job_title VARCHAR(30) NOT NULL,
-    salary FLOAT NOT NULL
+-- тригер на инсерт
+CREATE TABLE contact_details_clients (
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    email VARCHAR(30) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    company VARCHAR(40) NOT NULL
 );
 
+-- тригер на инсерт
+CREATE TABLE secret_date (
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    hash_password VARCHAR(100) NOT NULL,
+    address VARCHAR(200) NOT NULL
+);
+
+-- тригер на инсерт
+CREATE TABLE card (
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    shifrcard VARCHAR(100) NOT NULL,
+    amount FLOAT NOT NULL
+);
+
+-- взаимосвязь
+-- тригер на инсерт
 CREATE TABLE staff (
-    id_staff SERIAL PRIMARY KEY,        
-    id_position INT NOT NULL REFERENCES posit (id_position)
+    id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients),
+    id_position INT UNIQUE NOT NULL REFERENCES posit (id_position)
+);
+
+CREATE TABLE publishers (
+    id_publisher SERIAL PRIMARY KEY,
+    publishers_name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE books (

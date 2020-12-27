@@ -9,10 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="stylelog_reg.css">
-
-    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylelog_reg.css')}}">
 
     <title>Регистрация</title>
 
@@ -28,10 +25,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="login.html">Логинация</a>
+                    <a class="nav-link" href="login">Логинация</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="registration.html">Регистрация</a>
+                    <a class="nav-link" href="registration">Регистрация</a>
                 </li>
             </ul>
         </div>
@@ -40,20 +37,24 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3 mb-5">
-                <img src="emb.png" alt="Emblem" class="rounded float-left emblem mt-5">
-                <img src="emb.png" alt="Emblem" class="rounded float-right emblem mt-5">
+                <img src="{{ url_for('static', filename='emb.png')}}" alt="Emblem" class="rounded float-left emblem">
+                <img src="{{ url_for('static', filename='emb.png')}}" alt="Emblem" class="rounded float-right emblem">
                 <h2 class="title text-center font-weight-bold font-italic mt-5">Впервые здесь?</h2>
                 <h6 class="text-center font-weight-light" style="color: #15a98b;">Пройдите регистрацию</h6>
                 <div class="row">
                     <div class="col">
-                        <form action="http://127.0.0.1:5000/registration" method="post" name="form" class="form py-3" style="background-color: #fff;">
+                        <form action="http://127.0.0.1:5000/registration" method="post" name="form" class="form py-3 needs-validation" style="background-color: #fff;" novalidate>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputName" class="col-form-label col-form-label-lg pt-0">ФИО</label>
-                                <input type="text" class="form-control form-control-lg" id="InputName">
+                                <input type="text" class="form-control form-control-lg" id="InputName" required>
+                            </div>
+                            <div class="form-group px-3">
+                                <label for="InputTel" class="col-form-label col-form-label-md pt-0">Email</label>
+                                <input type="email" class="form-control form-control-lg" id="InputEmail" required>
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputDOB" class="col-form-label col-form-label-lg pt-0">Дата рождения</label>
-                                <input type="date" class="form-control form-control-lg" id="InputDOB">
+                                <input type="date" class="form-control form-control-lg" id="InputDOB" required>
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputRole" class="col-form-label col-form-label-lg pt-0">Роль</label>
@@ -64,19 +65,19 @@
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputCard" class="col-form-label col-form-label-lg pt-0">Карта</label>
-                                <input type="text" name="cardcode" pattern="[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}" placeholder="XXXX XXXX XXXX XXXX" class="form-control form-control-lg" id="InputCard">
+                                <input type="text" name="cardcode" pattern="[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}" placeholder="XXXX XXXX XXXX XXXX" class="form-control form-control-lg" id="InputCard" required>
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputAdress" class="col-form-label col-form-label-lg pt-0">Адрес</label>
-                                <input type="text" class="form-control form-control-lg" id="InputAdress">
+                                <input type="text" class="form-control form-control-lg" id="InputAdress" required>
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputPassword1" class="col-form-label col-form-label-lg">Ваш пароль</label>
-                                <input type="password" class="form-control form-control-lg" id="InputPassword1">
+                                <input type="password" class="form-control form-control-lg" id="InputPassword1" required>
                             </div>
                             <div class="form-group px-3 mb-0">
                                 <label for="InputTel" class="col-form-label col-form-label-lg pt-0">Телефон</label>
-                                <input type="text" name="tel" class="phone form-control form-control-lg" id="InputTel">
+                                <input type="text" name="tel" class="phone form-control form-control-lg" id="InputTel" required>
                             </div>
                             <button type="submit" class="btn text-white w-25 mt-2 ml-3">
                                 Регистрация
@@ -89,10 +90,6 @@
         </div>
     </div>
 
-    <script>
-        $(".phone").mask("+7(999)999-9999");
-
-    </script>
     <script>
         var cc = form.cardcode;
         for (var i in ['input', 'change', 'blur', 'keyup']) {
@@ -109,6 +106,7 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='login.js')}}"></script>
 </body>
 
 </html>

@@ -13,6 +13,16 @@ def cabinet():
 def login():
     return render_template('login.html')
 
+@app.route("/sale.html")
+def sale():
+    return render_template('sale.html')
+
+@app.route("/registration.html")
+def registration():
+    return render_template('registration.html')
+
+
+
 # @app.route("/stylelog_reg.css")
 # def stylelog_reg():
 #     return render_template('stylelog_reg.css')

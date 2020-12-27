@@ -1,0 +1,14 @@
+drop TABLE rol;
+drop TABLE posit;
+drop TABLE clients;
+drop TABLE contact_details_clients;
+drop TABLE secret_date;
+drop TABLE card;
+drop TABLE staff;
+drop TABLE publishers;
+drop TABLE books;
+drop TABLE purchases;
+
+
+
+
