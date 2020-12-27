@@ -1,4 +1,4 @@
-CREATE TABLE role(
+CREATE TABLE roles(
     id_role SERIAL PRIMARY KEY,
     name VARCHAR(45) NOT NULL
 );
@@ -6,7 +6,7 @@ CREATE TABLE role(
 -- какая должность
 CREATE TABLE posit (
     id_position SERIAL PRIMARY KEY,
-    id_role INT UNIQUE NOT NULL REFERENCES role (id_role),
+    id_role INT UNIQUE NOT NULL REFERENCES roles (id_role),
     job_title VARCHAR(30) NOT NULL,
     salary FLOAT NOT NULL
 );
@@ -14,16 +14,16 @@ CREATE TABLE posit (
 -- тригер на инсерт
 CREATE TABLE clients (
     id_clients SERIAL PRIMARY KEY,
+    email VARCHAR(30) NOT NULL UNIQUE,
     FIO VARCHAR(100) NOT NULL,
     created DATE NOT NULL,
     DOB DATE NOT NULL,
-    id_role INT UNIQUE NOT NULL REFERENCES role (id_role)
+    id_role INT UNIQUE NOT NULL REFERENCES roles (id_role)
 );
 
 -- тригер на инсерт
 CREATE TABLE contact_details_clients (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
-    email VARCHAR(30) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     company VARCHAR(40) NOT NULL
 );
@@ -32,13 +32,13 @@ CREATE TABLE contact_details_clients (
 CREATE TABLE secret_date (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
     hash_password VARCHAR(100) NOT NULL,
-    address VARCHAR(200) NOT NULL
+    hash_address VARCHAR(200) NOT NULL
 );
 
 -- тригер на инсерт
 CREATE TABLE card (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
-    shifrcard VARCHAR(100) NOT NULL,
+    hash_card VARCHAR(100) NOT NULL,
     amount FLOAT NOT NULL
 );
 
@@ -69,7 +69,3 @@ CREATE TABLE purchases (
     date DATE NOT NULL,
     id_staff INT NOT NULL REFERENCES staff (id_staff)
 );
-
-
-
-
