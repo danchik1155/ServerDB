@@ -48,13 +48,17 @@ def index():
 
 @app.route('/form')
 def form():
-    user = db.session.query(Clients, Contactdetailsclients, Card).all()
-    cl_items = Clients.query.all()
-    con_items = Contactdetailsclients.query.all()
-    car_items = Card.query.all()
-    items = cl_items + con_items + car_items
-    table = ItemTable(items)
-    return render_template("form.html",tryy=cl_items)
+    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        # Open a cursor to perform database operations
+        with conn.cursor() as cur:
+            cur.execute(f"SELECT fio, email, phone, amount FROM clients inner join contact_details_clients \
+            on clients.id_clients=contact_details_clients.id_clients inner join card \
+            on contact_details_clients.id_clients=card.id_clients;")
+            items = cur.fetchall()
+            conn.commit()
+    iitems = [dict(fio=items[0][0], email=items[0][1], phone=items[0][2], amount=items[0][3])]
+    table = ItemTable(iitems)
+    return render_template("form.html", table=table)
 
 
 @app.route('/users')
@@ -94,6 +98,7 @@ def login_pg():
             flash('Login or password is not correct')
 
     return render_template('login.html')
+
 
 @app.route("/book")
 def book():
@@ -175,6 +180,7 @@ def redirect_to_signin(response):
 @manager.user_loader
 def load_user(user_id):
     return Clients.query.get(user_id)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
