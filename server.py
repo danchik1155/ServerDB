@@ -7,29 +7,31 @@ app = Flask(__name__)
 @app.route("/cabinet", methods=['POST', 'GET'])
 def cabinet():
     if request.method == 'POST':
-        return render_template('cabinet.html', fio='Jerry')
+        return render_template('cabinet.html', fio='Jerry', role='Продавец')
 
 @app.route("/login")
 def login():
     return render_template('login.html')
 
-@app.route("/sale.html")
+@app.route("/book")
+def book():
+    return render_template('book.html')
+
+@app.route("/sale")
 def sale():
     return render_template('sale.html')
 
-@app.route("/registration.html")
+@app.route("/registration")
 def registration():
     return render_template('registration.html')
 
+@app.route("/create_pok")
+def create_pok():
+    return render_template('create_pok.html')
 
-
-# @app.route("/stylelog_reg.css")
-# def stylelog_reg():
-#     return render_template('stylelog_reg.css')
-#
-# @app.route("/stylemod.css")
-# def stylemod():
-#     return render_template('stylemod.css')
+@app.route("/create_rab")
+def create_rab():
+    return render_template('create_rab.html')
 
 @app.route("/status")
 def status():

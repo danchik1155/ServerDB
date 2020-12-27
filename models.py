@@ -1,5 +1,8 @@
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
+
+from main import manager
 
 db = SQLAlchemy()
 
@@ -19,7 +22,7 @@ class InfoModel(db.Model):
         return f"{self.name}:{self.age}"
 
 
-class Clients(db.Model):
+class Clients(db.Model, UserMixin):
     __tablename__ = 'clients'
 
     id_clients = db.Column(db.Integer, primary_key=True)
@@ -39,11 +42,12 @@ class Contactdetailsclients(db.Model):
     __tablename__ = 'contact_details_clients'
 
     id_clients = db.Column(db.Integer, ForeignKey('clients.id_clients', ondelete='CASCADE'), primary_key=True)
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     phone = db.Column(db.String(100), nullable=False)
     company = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, email, phone, company):
+    def __init__(self, id_clients, email, phone, company):
+        self.id_clients = id_clients
         self.email = email
         self.phone = phone
         self.company = company
@@ -56,7 +60,8 @@ class Secretdate(db.Model):
     hash_password = db.Column(db.String(100), nullable=False)
     hash_address = db.Column(db.String(200), nullable=False)
 
-    def __init__(self, hash_password, hash_addres):
+    def __init__(self, id_clients, hash_password, hash_addres):
+        self.id_clients = id_clients
         self.hash_password = hash_password
         self.hash_address = hash_addres
 
@@ -68,6 +73,11 @@ class Card(db.Model):
     hash_card = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float(), nullable=False)
 
-    def __init__(self, hash_card, amount):
+    def __init__(self, id_clients, hash_card, amount):
+        self.id_clients = id_clients
         self.hash_card = hash_card
         self.amount = amount
+
+@manager.user_loader
+def load_user(user_id):
+    return Clients.query.get(user_id)
