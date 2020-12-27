@@ -2,7 +2,7 @@ from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 
-from main import manager
+# from main import manager
 
 db = SQLAlchemy()
 
@@ -38,6 +38,8 @@ class Clients(db.Model, UserMixin):
         self.id_role = id_role
 
 
+
+
 class Contactdetailsclients(db.Model):
     __tablename__ = 'contact_details_clients'
 
@@ -60,10 +62,10 @@ class Secretdate(db.Model):
     hash_password = db.Column(db.String(100), nullable=False)
     hash_address = db.Column(db.String(200), nullable=False)
 
-    def __init__(self, id_clients, hash_password, hash_addres):
+    def __init__(self, id_clients, hash_password, hash_address):
         self.id_clients = id_clients
         self.hash_password = hash_password
-        self.hash_address = hash_addres
+        self.hash_address = hash_address
 
 
 class Card(db.Model):
@@ -77,7 +79,3 @@ class Card(db.Model):
         self.id_clients = id_clients
         self.hash_card = hash_card
         self.amount = amount
-
-@manager.user_loader
-def load_user(user_id):
-    return Clients.query.get(user_id)

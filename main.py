@@ -11,6 +11,7 @@ from models import db, InfoModel, Clients, Contactdetailsclients, Secretdate, Ca
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/cursach"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'so so very very secret'
 db.init_app(app)
 manager = LoginManager(app)
 migrate = Migrate(app, db)
@@ -42,7 +43,7 @@ def getinffromtable(table_name):
 
 @app.route('/')
 def index():
-    return form()
+    return redirect('/login')
 
 @app.route('/form')
 def form():
@@ -159,6 +160,10 @@ def redirect_to_signin(response):
         return redirect('/login' + '?next=' + request.url)
 
     return response
+
+@manager.user_loader
+def load_user(user_id):
+    return Clients.query.get(user_id)
 
 if __name__ == '__main__':
     app.run(debug=True)
