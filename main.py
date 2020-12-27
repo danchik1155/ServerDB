@@ -121,9 +121,9 @@ def registration():
         hash_card = generate_password_hash(request.form['card'])
         amount = request.form['amount']
         new_Client = Clients(fio=fio, created=created, dob=dob, id_role=role)
-        new_Contactdetailsclients = Contactdetailsclients(email=email, phone=phone, company=company)
-        new_Secretdate = Secretdate(hash_password=hash_password, hash_address=hash_address)
-        new_Card = Card(hash_card=hash_card, amount=amount)
+        new_Contactdetailsclients = Contactdetailsclients(id_clients=new_Client.gett_id(), email=email, phone=phone, company=company)
+        new_Secretdate = Secretdate(id_clients=new_Client.gett_id(), hash_password=hash_password, hash_address=hash_address)
+        new_Card = Card(id_clients=new_Client.gett_id(), hash_card=hash_card, amount=amount)
         db.session.add(new_Client)
         db.session.add(new_Contactdetailsclients)
         db.session.add(new_Secretdate)
@@ -158,7 +158,6 @@ def logout():
 def redirect_to_signin(response):
     if response.status_code == 401:
         return redirect('/login' + '?next=' + request.url)
-
     return response
 
 @manager.user_loader

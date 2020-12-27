@@ -37,7 +37,8 @@ class Clients(db.Model, UserMixin):
         self.dob = dob
         self.id_role = id_role
 
-
+    def gett_id(self):
+        return self.query.get(self.id_clients)
 
 
 class Contactdetailsclients(db.Model):
