@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='stylelog_reg.css')}}">
 
-    <title>Создание покупателя</title>
+    <title>Создание работника</title>
 
 </head>
 
@@ -50,38 +50,46 @@
                     <form action="http://127.0.0.1:5000/registration" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
                         <div class="form-group px-3 mb-0">
                             <label for="InputName" class="col-form-label col-form-label-lg pt-0">ФИО</label>
-                            <input type="text" class="form-control form-control-lg" id="InputName" required>
+                            <input type="text" name="fio" class="form-control form-control-lg" id="InputName" required>
                         </div>
                         <div class="form-group px-3">
                             <label for="InputTel" class="col-form-label col-form-label-md pt-0">Email</label>
-                            <input type="email" class="form-control form-control-lg" id="InputEmail" required>
+                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputDOB" class="col-form-label col-form-label-lg pt-0">Дата рождения</label>
-                            <input type="date" class="form-control form-control-lg" id="InputDOB" required>
+                            <input type="date" name="dob" class="form-control form-control-lg" id="InputDOB" required>
                         </div>
                         <div class="form-group px-3 mb-3">
                             <label for="InputRole" class="col-form-label col-form-label-lg pt-0">Роль</label>
-                            <select class="form-control form-control-lg" id="InputRole">
+                            <select name="role" class="form-control form-control-lg" id="InputRole">
                                 <option name="Продавец-консультант">Продавец-консультант</option>
                                 <option name="Менеджер">Менеджер</option>
                             </select>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputCard" class="col-form-label col-form-label-lg pt-0">Карта</label>
-                            <input type="text" name="cardcode" pattern="[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}" placeholder="XXXX XXXX XXXX XXXX" class="form-control form-control-lg" id="InputCard" required>
+                            <input type="text" name="card" pattern="[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}" placeholder="XXXX XXXX XXXX XXXX" class="form-control form-control-lg" id="InputCard" required>
+                        </div>
+                        <div class="form-group px-3 mb-0">
+                            <label for="sum" class="col-form-label col-form-label-md pt-0">Количество денег на карте</label>
+                            <input type="number" name="amount" class="form-control form-control-lg" id="sum" required>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputAdress" class="col-form-label col-form-label-lg pt-0">Адрес</label>
-                            <input type="text" class="form-control form-control-lg" id="InputAdress" required>
+                            <input type="text" name="address" class="form-control form-control-lg" id="InputAdress" required>
                         </div>
                         <div class="form-group px-3 mb-0">
+                                <label for="InputComp" class="col-form-label col-form-label-lg pt-0">Компания</label>
+                                <input type="text" name="company" class="form-control form-control-lg" id="InputComp" required>
+                            </div>
+                        <div class="form-group px-3 mb-0">
                             <label for="InputPassword1" class="col-form-label col-form-label-lg">Ваш пароль</label>
-                            <input type="password" class="form-control form-control-lg" id="InputPassword1" required>
+                            <input type="password" name="password" class="form-control form-control-lg" id="InputPassword1" required>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputTel" class="col-form-label col-form-label-lg pt-0">Телефон</label>
-                            <input type="text" name="tel" class="phone form-control form-control-lg" id="InputTel" required>
+                            <input type="text" name="phone" class="phone form-control form-control-lg" id="InputTel" required>
                         </div>
                         <button type="submit" class="btn text-white w-25 mt-2 ml-3">
                             Создать
@@ -92,6 +100,19 @@
         </div>
     </div>
 
+    <script>
+        var cc = form.card;
+        for (var i in ['input', 'change', 'blur', 'keyup']) {
+            cc.addEventListener('input', formatCard, false);
+        }
+
+        function formatCard() {
+            var card = this.value.replace(/[^\d]/g, '').substring(0, 16);
+            card = card != '' ? card.match(/.{1,4}/g).join(' ') : '';
+            this.value = card;
+        }
+
+    </script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
