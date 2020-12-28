@@ -40,6 +40,9 @@
                 <li class="nav-item">
                     <a href="create_rab" class="button nav-link">Создание работника</a>
                 </li>
+                <li class="nav-item">
+                    <a href="del" class="button nav-link">Удаление книги</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -48,7 +51,7 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="form-group pt-3 pl-3">
-                    <p class="pt-2">ФИО: {{ fio }}</p> /здесь переменная/
+                    <p class="pt-2">ФИО: {{ fio }}</p>
                 </div>
                 <div class="form-group pl-3">
                     <ul class="navbar-nav mr-auto">
@@ -62,10 +65,10 @@
                 <div class="popup">
                     <a class="close" title="Закрыть" href="#close"></a>
                     <div class="heig">
-                        <p class="pt-2">Каталог: {{ сatalog }}</p> /здесь переменная/
+                        <p class="pt-2">Каталог: {{ сatalog }}</p>
                     </div>
                 </div>
-                <form action="http://127.0.0.1:5000/prod" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
+                <form action="http://127.0.0.1:5000/sale" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
                     <div class="form-group px-3">
                         <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
                         <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook" required>

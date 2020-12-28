@@ -1,4 +1,4 @@
-drop TABLE roles;
+drop TABLE roles cascade;
 drop TABLE posit cascade;
 drop TABLE clients cascade;
 drop TABLE contact_details_clients cascade;
@@ -7,8 +7,6 @@ drop TABLE card cascade;
 drop TABLE staff cascade;
 drop TABLE publishers cascade;
 drop TABLE books cascade;
+drop TABLE deleted_books cascade;
 drop TABLE purchases cascade;
-
-
-
-
+drop TABLE sessions cascade;

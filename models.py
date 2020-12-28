@@ -3,30 +3,26 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_table import Table, Col
 from sqlalchemy import ForeignKey
 
-# from main import manager
-
 db = SQLAlchemy()
 
-class ItemTable(Table):
-    fio = Col('FIO')
-    email = Col('Email')
-    phone = Col('Phone')
-    amount = Col('Amount')
+class UsersBookTable(Table):
+    id_clients = Col('ID', show=False)
+    id_purchases = Col('Номер сделки')
+    name = Col('Название книги')
+    publishers_name = Col('Издатель')
+    year = Col('Дата издания')
+    date = Col('Дата покупки')
 
+class BooksTable(Table):
+    id_books = Col('ID Книги')
+    name = Col('Название книги')
+    publishers_name = Col('Издатель')
+    year = Col('Дата издания')
+    price = Col('Цена')
 
-class InfoModel(db.Model):
-    __tablename__ = 'info_table'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    age = db.Column(db.Integer())
-
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def __repr__(self):
-        return f"{self.name}:{self.age}"
+class PublishersTable(Table):
+    id_publisher = Col('ID издателя')
+    publishers_name = Col('Издатель')
 
 class Roles(db.Model):
     __tablename__ = 'roles'
@@ -96,11 +92,3 @@ class Card(db.Model):
         self.id_clients = id_clients
         self.hash_card = hash_card
         self.amount = amount
-
-class Results(Table):
-    id = Col('Id', show=False)
-    artist = Col('Artist')
-    title = Col('Title')
-    release_date = Col('Release Date')
-    publisher = Col('Publisher')
-    media_type = Col('Media')

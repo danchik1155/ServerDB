@@ -39,6 +39,9 @@
                 <li class="nav-item active">
                     <a href="create_rab" class="button nav-link">Создание работника</a>
                 </li>
+                <li class="nav-item">
+                    <a href="del" class="button nav-link">Удаление книги</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -47,7 +50,7 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div>
-                    <form action="http://127.0.0.1:5000/registration" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
+                    <form action="http://127.0.0.1:5000/create_rab" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
                         <div class="form-group px-3 mb-0">
                             <label for="InputName" class="col-form-label col-form-label-lg pt-0">ФИО</label>
                             <input type="text" name="fio" class="form-control form-control-lg" id="InputName" required>

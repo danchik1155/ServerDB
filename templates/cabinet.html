@@ -39,6 +39,9 @@
                 <li class="nav-item" id="s_rab">
                     <a href="create_rab" class="button nav-link">Создание работника</a>
                 </li>
+                <li class="nav-item" id="del">
+                    <a href="del" class="button nav-link">Удаление книги</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -48,36 +51,43 @@
             <div class="col-md-6 offset-md-3">
                 <h2 class="title text-center font-weight-bold font-italic">Данные о пользователе</h2>
                 <div class="form-group pt-3">
-                    <p class="pt-2">ФИО: {{ fio }}</p> /здесь переменная/
+                    <p class="pt-2">ФИО: {{ fio }}</p>
                 </div>
                 <div class="form-group">
-                    <p>Роль: {{ role }}</p> /здесь переменная/
+                    <p>Роль: {{ role }}</p>
                 </div>
                 <div class="form-group">
-                    <p>Счёт: {{ amount }}</p> /здесь переменная/
+                    <p>Счёт: {{ amount }}</p>
                 </div>
                 <div class="form-group">
-                    <p>Книги:</p>
-                    {{ table }}
+                    <p>Книги: {{ book }}</p>
                 </div>
             </div>
         </div>
+        <ul class="navbar-nav mr-auto col-md-6 offset-md-3">
+            <li class="nav-item exit" id="ex">
+                <a href="logout" class="button nav-link ext">Выход</a>
+            </li>
+        </ul>
     </div>
 
-    <script>
-    if ( {{role}} == 'Покупатель') {
+    
+<script>
+        if ("{{ role }}" == "Покупатель") {
         document.getElementById("prod").style.display = "none";
         document.getElementById("dob").style.display = "none";
         document.getElementById("s_pok").style.display = "none";
         document.getElementById("s_rab").style.display = "none";
-    } else {
-        if ( {{role}} == 'Продавец') {
-            document.getElementById("s_pok").style.display = "none";
-            document.getElementById("s_rab").style.display = "none";
-        }
+        document.getElementById("del").style.display = "none";
+    } else if ("{{ role }}" == "Продавец") {
+        document.getElementById("prod").style.display = "";
+        document.getElementById("dob").style.display = "";
+        document.getElementById("s_pok").style.display = "none";
+        document.getElementById("s_rab").style.display = "none";
+        document.getElementById("del").style.display = "none";
     }
-    </script>
-    
+</script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

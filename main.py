@@ -5,7 +5,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import db, Clients, Contactdetailsclients, Secretdate, Card, ItemTable
+from models import db, Clients, Contactdetailsclients, Secretdate, Card, Roles
+from models import UsersBookTable, BooksTable, PublishersTable
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/cursach"
@@ -13,32 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'so so very very secret'
 db.init_app(app)
 manager = LoginManager(app)
-
-
-def getinffromtable(table_name):
-    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
-        # Open a cursor to perform database operations
-        with conn.cursor() as cur:
-            s = []
-            wiwod = '''<table id="table" border="1" width="100%" cellpadding="5">\n'''
-            wiwod = wiwod + ' <tr>'
-            cur.execute(f"SELECT * FROM {table_name}")
-            for i in cur.fetchall():
-                s.append(i)
-            cur.execute(f'''select column_name from information_schema.columns 
-               where information_schema.columns.table_name='{table_name}';''')
-            for i in cur.fetchall():
-                for j in i:
-                    wiwod = wiwod + '<th> ' + str(j) + ' </th>'
-            wiwod = wiwod + '</tr>\n'
-            for i in s:
-                wiwod = wiwod + ' <tr>'
-                for j in i:
-                    wiwod = wiwod + '<th> ' + str(j) + ' </th>'
-                wiwod = wiwod + '</tr>\n'
-            wiwod = wiwod + "</table>"
-            conn.commit()
-            return wiwod
 
 
 @app.route('/')
@@ -51,44 +26,63 @@ def form():
     with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
-            cur.execute(f"SELECT fio, email, phone, amount FROM clients inner join contact_details_clients \
-            on clients.id_clients=contact_details_clients.id_clients inner join card \
-            on contact_details_clients.id_clients=card.id_clients;")
+            cur.execute(f"SELECT id_purchases, name, publishers_name, year, date FROM purchases inner join books \
+            on books.id_books=purchases.id_books inner join publishers \
+            on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
             items = cur.fetchall()
             conn.commit()
-    iitems = [dict(fio=items[0][0], email=items[0][1], phone=items[0][2], amount=items[0][3])]
-    table = ItemTable(iitems)
+    iitems = []
+    for i in range(len(items)):
+        iitems.append(dict(id_purchases=items[i][0], name=items[i][1],
+                           publishers_name=items[i][2], year=items[i][3], date=items[i][3]))
+    table = UsersBookTable(iitems)
     return render_template("form.html", table=table)
 
 
 @app.route('/users')
 def users():
-    return getinffromtable('clients')
+    pass
 
 
 @app.route("/cabinet", methods=['POST', 'GET'])
 @login_required
 def cabinet():
     if request.method == 'GET':
-        user = db.session.query(Clients, Contactdetailsclients, Card).filter_by(email=current_user.email).first()
-        return render_template('cabinet.html', fio=current_user.fio, role=current_user.id_role, amount=user.Card.amount,
-                               book=(getinffromtable('books')))
+        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+            # Open a cursor to perform database operations
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT id_clients, id_purchases, name, publishers_name, year, date FROM purchases inner join books \
+                on books.id_books=purchases.id_books inner join publishers \
+                on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
+                items = cur.fetchall()
+                conn.commit()
+        iitems = []
+        for i in range(len(items)):
+            iitems.append(dict(id_clients=items[i][0], id_purchases=items[i][1], name=items[i][2],
+                               publishers_name=items[i][3], year=items[i][4], date=items[i][5]))
+        table = UsersBookTable(iitems)
+        user = db.session.query(Clients, Contactdetailsclients, Card, Roles).filter_by(email=current_user.email).first()
+        return render_template('cabinet.html', fio=current_user.fio, role=str(user.Roles.name), amount=user.Card.amount,
+                               book=table)
 
 
 @app.route("/login", methods=['POST', 'GET'])
 def login_pg():
     if current_user.is_authenticated:
         return redirect('/cabinet')
-
     login = request.form.get('login')
     password = request.form.get('password')
-
     if login and password:
         user = db.session.query(Clients, Contactdetailsclients, Secretdate).filter_by(email=login).first()
         print(user)
-
         if user and check_password_hash(user.Secretdate.hash_password, password):
             login_user(user.Clients)
+            with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+                with conn.cursor() as cur:
+                    cur.execute(f"INSERT INTO sessions (id_clients, session_date) "
+                                f"VALUES ({current_user.id_clients},"
+                                f"'{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}');")
+                    conn.commit()
             next_page = request.args.get('next')
             if next_page is not None:
                 return redirect(next_page)
@@ -96,14 +90,23 @@ def login_pg():
                 return redirect('/cabinet')
         else:
             flash('Login or password is not correct')
-
     return render_template('login.html')
-
 
 @app.route("/book")
 def book():
-    return render_template('book.html')
-
+    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        # Open a cursor to perform database operations
+        with conn.cursor() as cur:
+            cur.execute(f"SELECT name, publishers_name, year, date FROM books \
+                   on books.id_books=purchases.id_books inner join publishers \
+                   on publishers.id_publisher=publishers.id_publisher;")
+            items = cur.fetchall()
+            conn.commit()
+    iitems = []
+    for i in range(len(items)):
+        iitems.append(dict(name=items[i][0], publishers_name=items[i][1], year=items[i][2], date=items[i][3]))
+    table = UsersBookTable(iitems)
+    return render_template('book.html', )
 
 @app.route("/sale")
 @login_required
@@ -118,7 +121,7 @@ def registration():
 
     if request.method == 'POST':
         fio = request.form['fio']
-        created = time.asctime()  # использовать дату
+        created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
         dob = request.form['dob']  # определить формат
         role = 0
         email = request.form['email']
@@ -140,7 +143,6 @@ def registration():
         db.session.add(new_Secretdate)
         db.session.add(new_Card)
         db.session.commit()
-
         return redirect('/login')
 
 
@@ -166,8 +168,15 @@ def status():
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
+    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with conn.cursor() as cur:
+            cur.execute(f"UPDATE sessions SET session_logout = "
+                        f"'{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}' "
+                        f"WHERE id_clients={current_user.id_clients}")
+            conn.commit()
     logout_user()
     return redirect('/login')
+
 
 
 @app.after_request
@@ -175,7 +184,6 @@ def redirect_to_signin(response):
     if response.status_code == 401:
         return redirect('/login' + '?next=' + request.url)
     return response
-
 
 @manager.user_loader
 def load_user(user_id):

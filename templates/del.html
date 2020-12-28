@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='stylelog_reg.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylemod.css')}}">
 
-    <title>Добавление книги</title>
+    <title>Удаление книги</title>
 
 </head>
 
@@ -31,7 +31,7 @@
                 <li class="nav-item">
                     <a href="sale" class="button nav-link">Продажа</a>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a href="book" class="button nav-link">Добавление книги</a>
                 </li>
                 <li class="nav-item">
@@ -40,7 +40,7 @@
                 <li class="nav-item">
                     <a href="create_rab" class="button nav-link">Создание работника</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a href="del" class="button nav-link">Удаление книги</a>
                 </li>
             </ul>
@@ -49,48 +49,44 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6 offset-md-3 mt-5">
+                <div class="form-group pl-3">
+                    <ul class="navbar-nav mr-auto">
+                        <!-- Ссылки на вызов модальных окон -->
+                        <li>
+                            <a href="#win1" class="button nav-link">Каталог книг</a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="#x" class="overlay" id="win1"></a>
+                <div class="popup">
+                    <a class="close" title="Закрыть" href="#close"></a>
+                    <div class="heig">
+                        <p class="pt-2">Каталог: {{ сatalog }}</p>
+                    </div>
+                </div>
                 <div>
-                    <form action="http://127.0.0.1:5000/book" method="post" name="form" class="py-3 back_w  needs-validation" novalidate>
-                        <div class="form-group px-3 mt-5">
-                            <label for="NameBook" class="col-form-label col-form-label-md pt-0">Название книги</label>
-                            <input type="text" name="name" class="form-control form-control-lg" id="NameBook" required>
-                        </div>
-                        <div class="form-group px-3 mb-3">
-                            <label for="InputBook" class="col-form-label col-form-label-lg pt-0">Дата выпуска</label>
-                            <input type="date" name="year" class="form-control form-control-lg" id="InputBook" required>
-                        </div>
+                    <form action="http://127.0.0.1:5000/del" method="post" name="form" class="py-3 back_w  needs-validation" novalidate>
                         <div class="form-group px-3">
-                            <label for="price" class="col-form-label col-form-label-md pt-0">Стоимость книги</label>
-                            <input type="number" name="price" class="form-control form-control-lg" id="price" required>
-                        </div>
-
-                        <div class="form-group pl-3">
-                            <ul class="navbar-nav mr-auto">
-                                <!-- Ссылки на вызов модальных окон -->
-                                <li>
-                                    <a href="#win2" class="button nav-link">Каталог издателей</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <a href="#x" class="overlay" id="win2"></a>
-                        <div class="popup">
-                            <a class="close" title="Закрыть" href="#close"></a>
-                            <div class="heig">
-                                <p class="pt-2">Каталог: {{ сatalog_isd }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group px-3">
-                            <label for="Isd" class="col-form-label col-form-label-md pt-0">Издатель</label>
-                            <input type="text" name="id_publisher" class="form-control form-control-lg" id="Isd" required>
+                            <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
+                            <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook" required>
                         </div>
                         <button type="submit" class="btn text-white w-25 mt-2 ml-3" style="background-color: #15a98b;">
-                            Добавить
+                            Удалить
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
