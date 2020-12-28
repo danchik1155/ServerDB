@@ -1,11 +1,17 @@
-CREATE TABLE roles(
+from werkzeug.security import generate_password_hash
+import psycopg2
+
+def firstrun():
+    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with conn.cursor() as cur:
+            cur.execute(f'''CREATE TABLE roles(
     id_role SERIAL PRIMARY KEY,
     name VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE posit (
     id_position SERIAL PRIMARY KEY,
-    id_role INT UNIQUE NOT NULL REFERENCES roles (id_role),
+    id_role INT NOT NULL REFERENCES roles (id_role),
     job_title VARCHAR(30) NOT NULL,
     salary FLOAT NOT NULL CHECK (salary >= 0)
 );
@@ -91,11 +97,14 @@ CREATE TRIGGER deleted_book BEFORE DELETE ON books
 
 INSERT INTO roles (id_role, name) VALUES (0, 'Покупатель'), (1, 'Продавец'), (2, 'Менеджер');
 
-INSERT INTO publishers (id_publishers, publishers_name) VALUES (1, 'Просвещение, Москва'), (2, 'Новое, СПБ')
+INSERT INTO publishers (id_publishers, publishers_name) VALUES (1, 'Просвещение, Москва'), (2, 'Новое, СПБ');
+
+INSERT INTO posit (id_position, id_role, job_title, salary) VALUES (0, 1, 'Стажер', 3000), (1, 1,'Продавец-консультант', 12000),(2, 2,'Менеджер', 30000);
 
 BEGIN;
 INSERT INTO clients (id_clients, email, FIO, created, DOB, id_role) VALUES (0, 'urvancev-00@mail.ru', 'Danik Urvantsev', now(), '2001-01-24', 2);
-INSERT INTO contact_details_clients (id_clients, phone, company) VALUES
-INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES
-INSERT INTO card (id_clients, hash_card, amount) VALUES
-COMMIT;
+INSERT INTO contact_details_clients (id_clients, phone, company) VALUES (0,'89877031111', 'Vk');
+INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
+ (0, '{generate_password_hash('123456789')}', '{generate_password_hash('Sovetsk')}');
+INSERT INTO card (id_clients, hash_card, amount) VALUES (0, '{generate_password_hash('4444 4444 4444 4444')}', 10000);
+COMMIT;''')

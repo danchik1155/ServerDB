@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from models import db, Clients, Contactdetailsclients, Secretdate, Card, Roles
 from models import UsersBookTable, BooksTable, PublishersTable
+from FirstRunning import firstrun
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/cursach"
@@ -23,18 +24,31 @@ def index():
 
 @app.route('/form')
 def form():
+    # with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    #     # Open a cursor to perform database operations
+    #     with conn.cursor() as cur:
+    #         cur.execute(f"SELECT id_purchases, name, publishers_name, year, date FROM purchases inner join books \
+    #         on books.id_books=purchases.id_books inner join publishers \
+    #         on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
+    #         items = cur.fetchall()
+    #         conn.commit()
+    # iitems = []
+    # for i in range(len(items)):
+    #     iitems.append(dict(id_purchases=items[i][0], name=items[i][1],
+    #                        publishers_name=items[i][2], year=items[i][3], date=items[i][3]))
+    # table = UsersBookTable(iitems)
     with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
-            cur.execute(f"SELECT id_purchases, name, publishers_name, year, date FROM purchases inner join books \
-            on books.id_books=purchases.id_books inner join publishers \
-            on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
+            cur.execute(f"SELECT clients.id_clients, fio, amount FROM clients inner join card \
+            on clients.id_clients=card.id_clients;")
             items = cur.fetchall()
             conn.commit()
     iitems = []
     for i in range(len(items)):
-        iitems.append(dict(id_purchases=items[i][0], name=items[i][1],
-                           publishers_name=items[i][2], year=items[i][3], date=items[i][3]))
+        iitems.append(
+            dict(id_clients=items[i][0], id_purchases=items[i][1], name=items[i][2], publishers_name='-', year='-',
+                 date='-'))
     table = UsersBookTable(iitems)
     return render_template("form.html", table=table)
 
@@ -53,7 +67,7 @@ def cabinet():
             with conn.cursor() as cur:
                 cur.execute(f"SELECT id_clients, id_purchases, name, publishers_name, year, date FROM purchases inner join books \
                 on books.id_books=purchases.id_books inner join publishers \
-                on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
+                on publishers.id_publishers=publishers.id_publishers where id_clients = {current_user.id_clients};")
                 items = cur.fetchall()
                 conn.commit()
         iitems = []
@@ -62,7 +76,9 @@ def cabinet():
                                publishers_name=items[i][3], year=items[i][4], date=items[i][5]))
         table = UsersBookTable(iitems)
         user = db.session.query(Clients, Contactdetailsclients, Card, Roles).filter_by(email=current_user.email).first()
-        return render_template('cabinet.html', fio=current_user.fio, role=str(user.Roles.name), amount=user.Card.amount,
+        return render_template('cabinet.html', fio=current_user.fio,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
+                               amount=db.session.query(Card).filter_by(id_clients=current_user.id_clients).first().amount,
                                book=table)
 
 
@@ -97,16 +113,15 @@ def book():
     with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
-            cur.execute(f"SELECT name, publishers_name, year, date FROM books \
-                   on books.id_books=purchases.id_books inner join publishers \
-                   on publishers.id_publisher=publishers.id_publisher;")
+            cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
+                   on books.id_publishers=publishers.id_publishers;")
             items = cur.fetchall()
             conn.commit()
     iitems = []
     for i in range(len(items)):
         iitems.append(dict(name=items[i][0], publishers_name=items[i][1], year=items[i][2], date=items[i][3]))
-    table = UsersBookTable(iitems)
-    return render_template('book.html', )
+    table = BooksTable(iitems)
+    return render_template('book.html', сatalog_isd=table)
 
 @app.route("/sale")
 @login_required
@@ -191,4 +206,8 @@ def load_user(user_id):
 
 
 if __name__ == '__main__':
+    try:
+        firstrun()
+    except psycopg2.errors.DuplicateTable:
+        pass
     app.run(debug=True)

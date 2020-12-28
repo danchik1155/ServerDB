@@ -52,6 +52,9 @@
             <div class="col-md-6 offset-md-3">
                 <div>
                     <form action="http://127.0.0.1:5000/book" method="post" name="form" class="py-3 back_w  needs-validation" novalidate>
+                        <div class="form-group">
+                            <p class="pt-2 pl-3" style="color: #15a98b; text-align: center;">Добавить книгу</p>
+                        </div>
                         <div class="form-group px-3 mt-5">
                             <label for="NameBook" class="col-form-label col-form-label-md pt-0">Название книги</label>
                             <input type="text" name="name" class="form-control form-control-lg" id="NameBook" required>
@@ -85,6 +88,19 @@
                             <input type="text" name="id_publisher" class="form-control form-control-lg" id="Isd" required>
                         </div>
                         <button type="submit" class="btn text-white w-25 mt-2 ml-3" style="background-color: #15a98b;">
+                            Добавить
+                        </button>
+                    </form>
+                    
+                    <form action="http://127.0.0.1:5000/publisher" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
+                        <div class="form-group">
+                            <p class="pt-2 pl-3" style="color: #15a98b; text-align: center;">Добавить издательство</p>
+                        </div>
+                        <div class="form-group px-3">
+                            <label for="NameIsd" class="col-form-label col-form-label-md pt-0">Название издательства</label>
+                            <input type="text" name="publisher" class="form-control form-control-lg" id="NameIsd" required>
+                        </div>
+                        <button type="submit" class="btn text-white w-25 mt-2 ml-3 mb-5" style="background-color: #15a98b;">
                             Добавить
                         </button>
                     </form>

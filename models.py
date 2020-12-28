@@ -29,6 +29,7 @@ class Roles(db.Model):
 
     id_role = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    users = db.relationship('Clients', backref='author', lazy='dynamic')
 
     def __init__(self, id_role, name):
         self.id_role = id_role
@@ -42,7 +43,7 @@ class Clients(db.Model, UserMixin):
     fio = db.Column(db.String(100), nullable=False)
     created = db.Column(db.Date(), nullable=False)
     dob = db.Column(db.Date(), nullable=False)
-    id_role = db.Column(db.Integer, ForeignKey('roles.id_role', ondelete='CASCADE'), nullable=False, unique=True)
+    id_role = db.Column(db.Integer, ForeignKey('roles.id_role', ondelete='CASCADE'), nullable=False)
 
     def __init__(self, email, fio, created, dob, id_role):
         self.email = email

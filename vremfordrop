@@ -10,3 +10,4 @@ drop TABLE books cascade;
 drop TABLE deleted_books cascade;
 drop TABLE purchases cascade;
 drop TABLE sessions cascade;
+drop FUNCTION deleted_book;
