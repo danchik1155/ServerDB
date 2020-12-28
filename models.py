@@ -24,7 +24,7 @@ class BooksTable(Table):
 
 
 class PublishersTable(Table):
-    id_publisher = Col('ID издателя')
+    id_publishers = Col('ID издателя')
     publishers_name = Col('Издатель')
 
 

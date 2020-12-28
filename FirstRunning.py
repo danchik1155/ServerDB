@@ -87,7 +87,7 @@ CREATE TABLE deleted_books (
 
 CREATE FUNCTION deleted_book() RETURNS trigger AS $deleted_book$
     BEGIN
-        INSERT INTO deleted_books( id_books, name,  id_publishers, year, price) values (OLD.id_books, OLD.name,  OLD.id_publisher, OLD.year, OLD.price);
+        INSERT INTO deleted_books( id_books, name,  id_publishers, year, price) values (OLD.id_books, OLD.name,  OLD.id_publishers, OLD.year, OLD.price);
         RETURN OLD;
     END;
 $deleted_book$ LANGUAGE plpgsql;
