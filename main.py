@@ -368,4 +368,5 @@ if __name__ == '__main__':
         firstrun()
     except psycopg2.errors.DuplicateTable:
         pass
+
     app.run(debug=True)
