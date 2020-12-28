@@ -32,8 +32,8 @@ def login_pg():
     login = request.form.get('login')
     password = request.form.get('password')
     if login and password:
-        user = db.session.query(Clients, Contactdetailsclients, Secretdate).filter_by(email=login).first()
-        print(user)
+        user_id = db.session.query(Contactdetailsclients).filter_by(email=login).first().id_clients
+        user = db.session.query(Clients).filter_by(id_clients=user_id).first()
         if user and check_password_hash(user.Secretdate.hash_password, password):
             login_user(user.Clients)
             with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
