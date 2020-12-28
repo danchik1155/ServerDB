@@ -93,13 +93,20 @@ def cabinet():
             iitems.append(dict(id_clients=items[i][0], id_purchases=items[i][1], name=items[i][2],
                                publishers_name=items[i][3], year=items[i][4], date=items[i][5]))
         table = UsersBookTable(iitems)
+        if db.session.query(Staff).filter_by(id_staff=current_user.id_clients).first():
+            salary = db.session.query(Posit).filter_by(id_position=db.session.query(Staff).filter_by(
+                id_staff=current_user.id_clients).first().id_position).first().salary
+            job_title = db.session.query(Posit).filter_by(id_position=db.session.query(Staff).filter_by(
+                id_staff=current_user.id_clients).first().id_position).first().job_title
+        else:
+            salary=0
+            job_title=''
         return render_template('cabinet.html', fio=current_user.fio,
                                role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
                                amount=db.session.query(Card).filter_by(id_clients=current_user.id_clients).first().amount,
                                book=table,
-                               salary=db.session.query(Posit).filter_by(id_position=db.session.query(Staff).filter_by(id_staff=current_user.id_clients).first().id_position).first().salary,
-                               job_title=db.session.query(Posit).filter_by(id_position=db.session.query(Staff).filter_by(id_staff=current_user.id_clients).first().id_position).first().job_title)
-
+                               salary=salary,
+                               job_title=job_title)
 @app.route("/sale")
 @login_required
 def sale():
