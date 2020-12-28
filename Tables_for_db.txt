@@ -50,7 +50,7 @@ CREATE TABLE publishers (
 CREATE TABLE books (
     id_books SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    id_publishers INT NOT NULL REFERENCES publishers (id_publishers),
+    id_publishers INT NOT NULL REFERENCES publishers (id_publishers) ON DELETE CASCADE,
     year DATE NOT NULL,
     price FLOAT NOT NULL CHECK (price > 0)
 );
@@ -91,7 +91,7 @@ CREATE TRIGGER deleted_book BEFORE DELETE ON books
 
 INSERT INTO roles (id_role, name) VALUES (0, 'Покупатель'), (1, 'Продавец'), (2, 'Менеджер');
 
-INSERT INTO publishers (id_publishers, publishers_name) VALUES (1, 'Просвещение, Москва'), (2, 'Новое, СПБ')
+INSERT INTO publishers (id_publishers, publishers_name) VALUES ('Просвещение, Москва'), ('Новое, СПБ')
 
 BEGIN;
 INSERT INTO clients (id_clients, email, FIO, created, DOB, id_role) VALUES (0, 'urvancev-00@mail.ru', 'Danik Urvantsev', now(), '2001-01-24', 2);

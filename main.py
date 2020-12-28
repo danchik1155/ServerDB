@@ -65,6 +65,7 @@ def registration():
         phone = request.form['phone']
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
+        print(hash_password)
         hash_address = generate_password_hash(request.form['address'])
         hash_card = generate_password_hash(request.form['card'])
         amount = request.form['amount']
@@ -120,36 +121,28 @@ def cabinet():
 @app.route("/sale", methods=['POST', 'GET'])
 @login_required
 def sale():
+    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+        # Open a cursor to perform database operations
+        with conn.cursor() as cur:
+            cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
+                   on books.id_publishers=publishers.id_publishers;")
+            items = cur.fetchall()
+            conn.commit()
+    iitems = []
+    for i in range(len(items)):
+        iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
+                           price=items[i][4]))
+    table = BooksTable(iitems)
     if request.method == 'GET':
-        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-            # Open a cursor to perform database operations
-            with conn.cursor() as cur:
-                cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
-                       on books.id_publishers=publishers.id_publishers;")
-                items = cur.fetchall()
-                conn.commit()
-        iitems = []
-        for i in range(len(items)):
-            iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
-                               price=items[i][4]))
-        table = BooksTable(iitems)
         return render_template('sale.html', fio=current_user.fio, сatalog=table)
     if request.method == 'POST':
         id_books = request.form['id_books']
-        date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
-        id_clients = db.session.query(Clients).filter_by(email=request.form['email']).first().id_clients
-        price = db.session.query(Books).filter_by(id_books=id_books).first().price
-        new_Purchases = Purchases(id_books=id_books, id_clients=id_clients,
-                                  id_staff=current_user.id_clients, date=date)
-        db.session.add(new_Purchases)
-        db.session.commit()
-        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-            # Open a cursor to perform database operations
-            with conn.cursor() as cur:
-                cur.execute("UPDATE card set amount = amount - {} where id_clients = {}".format(price, id_clients))
-                cur.execute("UPDATE card set amount = amount + {} where id_clients = {}".format(price, 0))
-                conn.commit()
-        return redirect('/login')
+        if db.session.query(Books).filter_by(id_books=id_books).first() is not None:
+            price = db.session.query(Books).filter_by(id_books=id_books).first().price
+        else:
+            price = 0
+        return render_template('sale.html', id_books=id_books, fio=current_user.fio, сatalog=table,
+                               price=price)
 
 
 @app.route("/book", methods=['POST', 'GET'])
@@ -238,7 +231,6 @@ def create_rab():
         elif request.form['role'] == 'Менеджер':
             role = 2
             id_position = 2
-
         email = request.form['email']
         phone = request.form['phone']
         company = request.form['company']
@@ -286,37 +278,23 @@ def deletebook():
                 cur.execute("DELETE FROM books where id_books = {};".format(request.form['id_books']))
         return redirect('/login')
 
-
-@app.route('/form')
-def form():
-    # with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-    #     # Open a cursor to perform database operations
-    #     with conn.cursor() as cur:
-    #         cur.execute(f"SELECT id_purchases, name, publishers_name, year, date FROM purchases inner join books \
-    #         on books.id_books=purchases.id_books inner join publishers \
-    #         on publishers.id_publisher=publishers.id_publisher where id_clients = {current_user.id_clients};")
-    #         items = cur.fetchall()
-    #         conn.commit()
-    # iitems = []
-    # for i in range(len(items)):
-    #     iitems.append(dict(id_purchases=items[i][0], name=items[i][1],
-    #                        publishers_name=items[i][2], year=items[i][3], date=items[i][3]))
-    # table = UsersBookTable(iitems)
-    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-        # Open a cursor to perform database operations
-        with conn.cursor() as cur:
-            cur.execute(f"SELECT clients.id_clients, fio, amount FROM clients inner join card \
-            on clients.id_clients=card.id_clients;")
-            items = cur.fetchall()
-            conn.commit()
-    iitems = []
-    for i in range(len(items)):
-        iitems.append(
-            dict(id_clients=items[i][0], id_purchases=items[i][1], name=items[i][2], publishers_name='-', year='-',
-                 date='-'))
-    table = UsersBookTable(iitems)
-    return render_template("form.html", table=table)
-
+@app.route("/search", methods=['POST', 'GET'])
+def search_pg():
+    id_books=request.form['id_books']
+    if request.method == 'POST':
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+            # Open a cursor to perform database operations
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
+                       on books.id_publishers=publishers.id_publishers where id_books={id_books};")
+                items = cur.fetchall()
+                conn.commit()
+        iitems = []
+        for i in range(len(items)):
+            iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
+                               price=items[i][4]))
+        table = BooksTable(iitems)
+    return render_template('sale.html', search=table)
 
 @app.route('/users')
 def users():
@@ -338,6 +316,26 @@ def users():
 @app.route("/status")
 def status():
     return {'status': 'true', 'name': 'TG', 'time': time.asctime()}
+
+
+@app.route('/id_books', methods=['GET', 'POST'])
+def idbook():
+    id_books = request.form['id_books']
+    date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
+    id_clients = db.session.query(Clients).filter_by(email=request.form['email']).first().id_clients
+    price = db.session.query(Books).filter_by(id_books=id_books).first().price
+    new_Purchases = Purchases(id_books=id_books, id_clients=id_clients,
+                              id_staff=current_user.id_clients, date=date)
+    db.session.add(new_Purchases)
+    db.session.commit()
+    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+        # Open a cursor to perform database operations
+        with conn.cursor() as cur:
+            cur.execute("UPDATE card set amount = amount - {} where id_clients = {}".format(price, id_clients))
+            cur.execute("UPDATE card set amount = amount + {} where id_clients = {}".format(price, 0))
+            conn.commit()
+    return redirect('/login')
+
 
 
 @app.route('/logout', methods=['GET', 'POST'])

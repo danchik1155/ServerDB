@@ -22,30 +22,30 @@ CREATE TABLE clients (
     FIO VARCHAR(100) NOT NULL,
     created DATE NOT NULL,
     DOB DATE NOT NULL,
-    id_role INT NOT NULL REFERENCES roles (id_role)
+    id_role INT NOT NULL REFERENCES roles (id_role) ON DELETE CASCADE
 );
 
 CREATE TABLE contact_details_clients (
-    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
     phone VARCHAR(20) NOT NULL,
     company VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE secret_date (
-    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
     hash_password VARCHAR(100) NOT NULL,
     hash_address VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE card (
-    id_clients INT PRIMARY KEY REFERENCES clients (id_clients),
+    id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
     hash_card VARCHAR(100) NOT NULL,
     amount FLOAT NOT NULL CHECK (amount >= 0)
 );
 
 CREATE TABLE staff (
-    id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients),
-    id_position INT NOT NULL REFERENCES posit (id_position)
+    id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
+    id_position INT NOT NULL REFERENCES posit (id_position) ON DELETE CASCADE
 );
 
 CREATE TABLE publishers (
@@ -56,22 +56,22 @@ CREATE TABLE publishers (
 CREATE TABLE books (
     id_books SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    id_publishers INT NOT NULL REFERENCES publishers (id_publishers),
+    id_publishers INT NOT NULL REFERENCES publishers (id_publishers) ON DELETE CASCADE,
     year DATE NOT NULL,
     price FLOAT NOT NULL CHECK (price > 0)
 );
 
 CREATE TABLE purchases (
     id_purchases SERIAL PRIMARY KEY,
-    id_clients INT NOT NULL REFERENCES clients (id_clients),
-    id_books INT NOT NULL REFERENCES books (id_books),
+    id_clients INT NOT NULL REFERENCES clients (id_clients) ON DELETE CASCADE,
+    id_books INT NOT NULL REFERENCES books (id_books) ON DELETE CASCADE,
     date DATE NOT NULL,
-    id_staff INT NOT NULL REFERENCES staff (id_staff)
+    id_staff INT NOT NULL REFERENCES staff (id_staff) ON DELETE CASCADE
 );
 
 CREATE TABLE sessions (
     id_sessions SERIAL PRIMARY KEY,
-    id_clients INT NOT NULL REFERENCES clients (id_clients),
+    id_clients INT NOT NULL REFERENCES clients (id_clients) ON DELETE CASCADE,
     session_date TIMESTAMP NOT NULL,
     session_logout TIMESTAMP
 );
@@ -97,7 +97,7 @@ CREATE TRIGGER deleted_book BEFORE DELETE ON books
 
 INSERT INTO roles (id_role, name) VALUES (0, 'Покупатель'), (1, 'Продавец'), (2, 'Менеджер');
 
-INSERT INTO publishers (id_publishers, publishers_name) VALUES (1, 'Просвещение, Москва'), (2, 'Новое, СПБ');
+INSERT INTO publishers (publishers_name) VALUES ('Просвещение, Москва'), ('Новое, СПБ');
 
 INSERT INTO posit (id_position, id_role, job_title, salary) VALUES (0, 1, 'Стажер', 3000), (1, 1,'Продавец-консультант', 12000),(2, 2,'Менеджер', 30000);
 
@@ -108,4 +108,7 @@ INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
  (0, '{generate_password_hash('123456789')}', '{generate_password_hash('Sovetsk')}');
 INSERT INTO card (id_clients, hash_card, amount) VALUES (0, '{generate_password_hash('4444 4444 4444 4444')}', 10000);
 INSERT INTO staff (id_staff, id_position) VALUES (0, 2);
-COMMIT;''')
+COMMIT;
+GRANT ALL PRIVILEGES on all tables in schema public to editor;
+GRANT ALL PRIVILEGES on all sequences in schema public to editor;
+''')

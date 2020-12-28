@@ -68,20 +68,24 @@
                         <p class="pt-2">Каталог: {{ сatalog }}</p>
                     </div>
                 </div>
-                <form action="http://127.0.0.1:5000/sale" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
+                <form action="http://127.0.0.1:5000/sale" method="post" name="form" id="form_book" class="py-1 back_w needs-validation" novalidate>
                     <div class="form-group px-3">
                         <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
-                        <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook" required onkeyup="chekprice()">
+                        <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook" onkeyup="ae();" required>
+                    </div>
+                </form>
+                <form action="http://127.0.0.1:5000/id_books" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
+                    <div class="form-group px-3" id="div1">
+                        <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
+                        <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook2">
                     </div>
                     <div class="form-group px-3">
-                            <label for="InputEmail" class="col-form-label col-form-label-md pt-0">Email</label>
-                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
+                        <label for="InputEmail" class="col-form-label col-form-label-md pt-0">Email</label>
+                        <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
                     </div>
-                    <!--<div class="form-group px-3">
+                    <div class="form-group px-3">
                         <label for="price" class="col-form-label col-form-label-md pt-0">Стоимость книги</label>
                         <input type="number" name="price" class="form-control form-control-lg" id="price" required>
-                    </div>--!>
-                    <div id='div1' class="form-group px-3">
                     </div>
                     <div class="form-group px-3">
                         <label for="date" class="col-form-label col-form-label-md pt-0">Дата</label>
@@ -91,11 +95,32 @@
                         Продать
                     </button>
                 </form>
+                <form action="http://127.0.0.1:5000/search" method="post" name="form" class="py-1 back_w needs-validation" novalidate>
+                    <div class="form-group mt-3">
+                        <p class="pt-2 pl-3" style="color: #15a98b; text-align: center;">Поиск</p>
+                    </div>
+                    <div class="form-group px-3">
+                        <label for="IDBook" class="col-form-label col-form-label-md pt-0">id книги</label>
+                        <input type="text" name="id_books" class="form-control form-control-lg" id="IDBook3" required>
+                    </div>
+                    <button type="submit" class="btn text-white w-25 mt-2 ml-3 mb-2" style="background-color: #15a98b;">
+                        Искать
+                    </button>
+                    <div class="form-group pb-5 pl-3">
+                        <p class="pt-2">Результат: {{ search }}</p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
+    function ae(){
+        document.getElementById("form_book").submit();
+        }
+    </script>
+    <script>
+        document.getElementById("div1").style.display = "none";
         var d = new Date();
         var day = d.getDate();
         var month = d.getMonth() + 1;
@@ -104,25 +129,17 @@
         name_input.value = day + "-" + month + "-" + year;
     </script>
     <script>
-    var xhr = new XMLHttpRequest();
-
-var body = 'name=' + encodeURIComponent(name) +
-  '&surname=' + encodeURIComponent(surname);
-
-xhr.open("POST", '/submit', true);
-xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-xhr.onreadystatechange = ...;
-
-xhr.send(body);
-    $('<table><tr><td>'xxx.responseText'</td></tr></table>').appendTo( '#div1' );
+        var bid = document.getElementById('IDBook');
+        var bid2 = document.getElementById('IDBook2');
+        var np = document.getElementById('price');
+        bid.value = {{ id_books }};
+        bid2.value = {{ id_books }};
+        np.value = {{ price }};
     </script>
-
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='login.js')}}"></script>
-    <script> $('<table><tr><td>{{ price }}</td></tr></table>').appendTo( '#div1' );</script>
 </body>
 
 </html>
