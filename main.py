@@ -11,11 +11,13 @@ from models import UsersBookTable, BooksTable, PublishersTable
 from FirstRunning import firstrun
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/cursach"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:qetuosfhk@localhost:5432/cursach"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'so so very very secret'
 db.init_app(app)
 manager = LoginManager(app)
+psycopglog = 'editor'
+psycopgpass = 'qsefthuko'
 
 
 @app.route('/')
@@ -34,7 +36,7 @@ def login_pg():
         print(user)
         if user and check_password_hash(user.Secretdate.hash_password, password):
             login_user(user.Clients)
-            with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+            with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
                 with conn.cursor() as cur:
                     cur.execute(f"INSERT INTO sessions (id_clients, session_date) "
                                 f"VALUES ({current_user.id_clients},"
@@ -85,7 +87,7 @@ def registration():
 @login_required
 def cabinet():
     if request.method == 'GET':
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
                 cur.execute(f"SELECT id_clients, id_purchases, name, publishers_name, year, date FROM purchases inner join books \
@@ -119,7 +121,7 @@ def cabinet():
 @login_required
 def sale():
     if request.method == 'GET':
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
                 cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
@@ -131,7 +133,7 @@ def sale():
             iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
                                price=items[i][4]))
         table = BooksTable(iitems)
-        return render_template('sale.html', сatalog=table)
+        return render_template('sale.html', fio=current_user.fio, сatalog=table)
     if request.method == 'POST':
         id_books = request.form['id_books']
         date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
@@ -141,7 +143,7 @@ def sale():
                                   id_staff=current_user.id_clients, date=date)
         db.session.add(new_Purchases)
         db.session.commit()
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
                 cur.execute("UPDATE card set amount = amount - {} where id_clients = {}".format(price, id_clients))
@@ -153,7 +155,7 @@ def sale():
 @app.route("/book", methods=['POST', 'GET'])
 def book():
     if request.method == 'GET':
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
                 cur.execute(f"SELECT  id_publishers, publishers_name from publishers;")
@@ -180,7 +182,7 @@ def book():
 def publisher_pg():
     if request.method == 'POST':
         publishers_name = request.form['publisher']
-        new_Publisher=Publishers(publishers_name=publishers_name)
+        new_Publisher = Publishers(publishers_name=publishers_name)
         db.session.add(new_Publisher)
         db.session.commit()
         return redirect('/login')
@@ -217,6 +219,7 @@ def create_pok():
         db.session.commit()
         return redirect('/login')
 
+
 @app.route("/create_rab", methods=['POST', 'GET'])
 @login_required
 def create_rab():
@@ -226,10 +229,10 @@ def create_rab():
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
         dob = request.form['dob']
-        if request.form['role'] =='Стажер':
+        if request.form['role'] == 'Стажер':
             role = 1
             id_position = 0
-        elif request.form['role'] =='Продавец-консультант':
+        elif request.form['role'] == 'Продавец-консультант':
             role = 1
             id_position = 1
         elif request.form['role'] == 'Менеджер':
@@ -259,11 +262,12 @@ def create_rab():
         db.session.commit()
         return redirect('/login')
 
+
 @app.route("/del", methods=['POST', 'GET'])
 @login_required
 def deletebook():
     if request.method == 'GET':
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
                 cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
@@ -277,14 +281,15 @@ def deletebook():
         table = BooksTable(iitems)
         return render_template('del.html', сatalog=table)
     if request.method == 'POST':
-        with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             with conn.cursor() as cur:
                 cur.execute("DELETE FROM books where id_books = {};".format(request.form['id_books']))
         return redirect('/login')
 
+
 @app.route('/form')
 def form():
-    # with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    # with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
     #     # Open a cursor to perform database operations
     #     with conn.cursor() as cur:
     #         cur.execute(f"SELECT id_purchases, name, publishers_name, year, date FROM purchases inner join books \
@@ -297,7 +302,7 @@ def form():
     #     iitems.append(dict(id_purchases=items[i][0], name=items[i][1],
     #                        publishers_name=items[i][2], year=items[i][3], date=items[i][3]))
     # table = UsersBookTable(iitems)
-    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
             cur.execute(f"SELECT clients.id_clients, fio, amount FROM clients inner join card \
@@ -318,7 +323,7 @@ def users():
     pass
 
     #
-    # with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    # with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
     #     # Open a cursor to perform database operations
     #     with conn.cursor() as cur:
     #         cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
@@ -338,7 +343,7 @@ def status():
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
-    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
         with conn.cursor() as cur:
             cur.execute(f"UPDATE sessions SET session_logout = "
                         f"'{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}' "

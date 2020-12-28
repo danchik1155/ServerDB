@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash
 import psycopg2
 
 def firstrun():
-    with psycopg2.connect(dbname='cursach', user='postgres', password='password', host='localhost') as conn:
+    with psycopg2.connect(dbname='cursach', user='moderator', password='wryipadgjl', host='localhost') as conn:
         with conn.cursor() as cur:
             cur.execute(f'''CREATE TABLE roles(
     id_role SERIAL PRIMARY KEY,
