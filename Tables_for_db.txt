@@ -39,7 +39,7 @@ CREATE TABLE card (
 
 CREATE TABLE staff (
     id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients),
-    id_position INT UNIQUE NOT NULL REFERENCES posit (id_position)
+    id_position INT NOT NULL REFERENCES posit (id_position)
 );
 
 CREATE TABLE publishers (

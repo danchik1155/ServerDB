@@ -45,7 +45,7 @@ CREATE TABLE card (
 
 CREATE TABLE staff (
     id_staff SERIAL PRIMARY KEY REFERENCES clients (id_clients),
-    id_position INT UNIQUE NOT NULL REFERENCES posit (id_position)
+    id_position INT NOT NULL REFERENCES posit (id_position)
 );
 
 CREATE TABLE publishers (
@@ -107,4 +107,5 @@ INSERT INTO contact_details_clients (id_clients, phone, company) VALUES (0,'8987
 INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
  (0, '{generate_password_hash('123456789')}', '{generate_password_hash('Sovetsk')}');
 INSERT INTO card (id_clients, hash_card, amount) VALUES (0, '{generate_password_hash('4444 4444 4444 4444')}', 10000);
+INSERT INTO staff (id_staff, id_position) VALUES (0, 2);
 COMMIT;''')
