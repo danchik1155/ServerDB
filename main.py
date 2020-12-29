@@ -4,6 +4,7 @@ import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from Crypto.Cipher import Salsa20
 
 from models import db, Clients, Contactdetailsclients, Secretdate, Card, Roles, Posit, Publishers, Purchases, Books, \
     Staff
@@ -14,6 +15,10 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:qetuosfhk@localhost:5432/cursach"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'so so very very secret'
+
+secret = b'*Thirty-two byte (256 bits) key*'
+cipher = Salsa20.new(key=secret)
+
 db.init_app(app)
 manager = LoginManager(app)
 psycopglog = 'editor'
@@ -32,10 +37,10 @@ def login_pg():
     login = request.form.get('login')
     password = request.form.get('password')
     if login and password:
-        user_id = db.session.query(Contactdetailsclients).filter_by(email=login).first().id_clients
-        user = db.session.query(Clients).filter_by(id_clients=user_id).first()
-        if user and check_password_hash(user.Secretdate.hash_password, password):
-            login_user(user.Clients)
+        user = db.session.query(Clients).filter_by(email=login).first()
+        if user and check_password_hash(
+                db.session.query(Secretdate).filter_by(id_clients=user.id_clients).first().hash_password, password):
+            login_user(user)
             with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
                 with conn.cursor() as cur:
                     cur.execute(f"INSERT INTO sessions (id_clients, session_date) "
@@ -67,7 +72,7 @@ def registration():
         hash_password = generate_password_hash(request.form['password'])
         print(hash_password)
         hash_address = generate_password_hash(request.form['address'])
-        hash_card = generate_password_hash(request.form['card'])
+        hash_card = cipher.nonce + cipher.encrypt(request.form['card'])
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -368,5 +373,4 @@ if __name__ == '__main__':
         firstrun()
     except psycopg2.errors.DuplicateTable:
         pass
-
     app.run(debug=True)

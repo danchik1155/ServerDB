@@ -12,23 +12,23 @@ def firstrun():
 CREATE TABLE posit (
     id_position SERIAL PRIMARY KEY,
     id_role INT NOT NULL REFERENCES roles (id_role),
-    job_title VARCHAR(30) NOT NULL,
+    job_title VARCHAR(100) NOT NULL,
     salary FLOAT NOT NULL CHECK (salary >= 0)
 );
 
 CREATE TABLE clients (
     id_clients SERIAL PRIMARY KEY,
-    email VARCHAR(30) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     FIO VARCHAR(100) NOT NULL,
     created DATE NOT NULL,
-    DOB DATE NOT NULL,
+    DOB DATE,
     id_role INT NOT NULL REFERENCES roles (id_role) ON DELETE CASCADE
 );
 
 CREATE TABLE contact_details_clients (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
-    phone VARCHAR(20) NOT NULL,
-    company VARCHAR(40) NOT NULL
+    phone VARCHAR(100) NOT NULL,
+    company VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE secret_date (
@@ -105,7 +105,7 @@ BEGIN;
 INSERT INTO clients (id_clients, email, FIO, created, DOB, id_role) VALUES (0, 'urvancev-00@mail.ru', 'Danik Urvantsev', now(), '2001-01-24', 2);
 INSERT INTO contact_details_clients (id_clients, phone, company) VALUES (0,'89877031111', 'Vk');
 INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
- (0, '{generate_password_hash('123456789')}', '{generate_password_hash('Sovetsk')}');
+ (0, '{generate_password_hash('Danilka1122')}', '{generate_password_hash('Sovetsk')}');
 INSERT INTO card (id_clients, hash_card, amount) VALUES (0, '{generate_password_hash('4444 4444 4444 4444')}', 10000);
 INSERT INTO staff (id_staff, id_position) VALUES (0, 2);
 COMMIT;
