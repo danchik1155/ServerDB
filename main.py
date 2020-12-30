@@ -62,6 +62,7 @@ def registration():
     if request.method == 'GET':
         return render_template('registration.html')
     if request.method == 'POST':
+        cipher = Salsa20.new(key=secret)
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
         dob = request.form['dob']  # определить формат
@@ -119,15 +120,35 @@ def cabinet():
                                role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
                                # amount=db.session.query(Card).filter_by(
                                #    id_clients=current_user.id_clients).first().amount,
-                               amount=10000,
+                               amount=db.session.query(Card).filter_by(
+                                   id_clients=current_user.id_clients).first().amount,
                                book=table,
                                salary=salary,
                                job_title=job_title)
 
 
+@app.route("/money", methods=['POST', 'GET'])
+@login_required
+def money():
+    if request.method == 'POST':
+        amount = request.form['money']
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+            # Open a cursor to perform database operations
+            with conn.cursor() as cur:
+                cur.execute("UPDATE card set amount = amount + %f where id_clients = %s;" %
+                            (float(amount), current_user.id_clients))
+                conn.commit()
+        return redirect('/cabinet')
+    else:
+        return 'What are you doing here?'
+
+
 @app.route("/sale", methods=['POST', 'GET'])
 @login_required
 def sale():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Продавец" and \
+            db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
         # Open a cursor to perform database operations
         with conn.cursor() as cur:
@@ -141,7 +162,8 @@ def sale():
                            price=items[i][4]))
     table = BooksTable(iitems)
     if request.method == 'GET':
-        return render_template('sale.html', fio=current_user.fio, сatalog=table)
+        return render_template('sale.html', fio=current_user.fio, сatalog=table,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
         id_books = request.form['id_books']
         if db.session.query(Books).filter_by(id_books=id_books).first() is not None:
@@ -156,6 +178,9 @@ def sale():
 @app.route("/book", methods=['POST', 'GET'])
 @login_required
 def book():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Продавец" and \
+            db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'GET':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
@@ -184,21 +209,30 @@ def book():
 @app.route("/publisher", methods=['POST', 'GET'])
 @login_required
 def publisher_pg():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Продавец" and \
+            db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'POST':
         publishers_name = request.form['publisher']
         new_Publisher = Publishers(publishers_name=publishers_name)
         db.session.add(new_Publisher)
         db.session.commit()
         return redirect('/login')
+    else:
+        return 'What are you doing here?'
 
 
 @app.route("/create_pok", methods=['POST', 'GET'])
 @login_required
 def create_pok():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Продавец" and \
+            db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'GET':
         return render_template('create_pok.html',
                                role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
+        cipher = Salsa20.new(key=secret)
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
         dob = request.form['dob']  # определить формат
@@ -208,7 +242,7 @@ def create_pok():
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
         hash_address = generate_password_hash(request.form['address'])
-        hash_card = generate_password_hash(request.form['card'])
+        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -228,10 +262,13 @@ def create_pok():
 @app.route("/create_rab", methods=['POST', 'GET'])
 @login_required
 def create_rab():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'GET':
         return render_template('create_rab.html',
                                role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
+        cipher = Salsa20.new(key=secret)
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
         dob = request.form['dob']
@@ -249,7 +286,7 @@ def create_rab():
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
         hash_address = generate_password_hash(request.form['address'])
-        hash_card = generate_password_hash(request.form['card'])
+        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -271,6 +308,8 @@ def create_rab():
 @app.route("/del", methods=['POST', 'GET'])
 @login_required
 def deletebook():
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'GET':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
@@ -312,22 +351,16 @@ def search_pg():
                                price=items[i][4]))
         table = BooksTable(iitems)
         table.border = True
-    return render_template('sale.html', search=table)
+        return render_template('sale.html', search=table,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
+    else:
+        return 'What are you doing here?'
 
 
 @app.route('/all', methods=['POST', 'GET'])
 def users():
-    All_clients = db.session.query(Clients).all
-    All_contact_details_clients = db.session.query(Contactdetailsclients).all
-    All_secret_date = db.session.query(Secretdate).all
-    All_card = db.session.query(Card).all
-    # table = Users(db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
-    #                                           Contactdetailsclients.phone, Contactdetailsclients.company,
-    #                                           Secretdate.hash_password, Secretdate.hash_address,
-    #                                           Card.hash_card, Card.amount).join(
-    #     Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).join(
-    #     Secretdate, Contactdetailsclients.id_clients == Secretdate.id_clients).join(
-    #     Card, Secretdate.id_clients == Card.id_clients).all())
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     page = request.args.get('page', 1, type=int)
     posts = db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
                              Contactdetailsclients.phone, Contactdetailsclients.company).join(
@@ -336,50 +369,76 @@ def users():
                                    Contactdetailsclients.phone, Contactdetailsclients.company).join(
         Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page,
                                                                                                 per_page=5).items)
-    print(table)
+    table.border = True
     return render_template('all.html', pols=table, posts=posts,
                            role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
 
 
 @app.route("/edit/<int:id_clients>", methods=['POST', 'GET'])
 def edit(id_clients):
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
     if request.method == 'GET':
+        cipher = Salsa20.new(key=secret)
+        msg = eval(db.session.query(Card).filter_by(id_clients=id_clients).first().hash_card)
+        print(msg)
+        msg_nonce = msg[:8]
+        ciphertext = msg[8:]
+        print(msg_nonce)
+        cipher = Salsa20.new(key=secret, nonce=msg_nonce)
+        plaintext = cipher.decrypt(ciphertext).decode('ascii')
+        print(plaintext)
         return render_template('edit.html',
-                           role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
-                           id_clients=id_clients,
-                           email=db.session.query(Clients).filter_by(id_clients=id_clients).first().email,
-                           fio=db.session.query(Clients).filter_by(id_clients=id_clients).first().fio,
-                           created=db.session.query(Clients).filter_by(id_clients=id_clients).first().created,
-                           dob=db.session.query(Clients).filter_by(id_clients=id_clients).first().dob,
-                           phone=db.session.query(Contactdetailsclients).filter_by(id_clients=id_clients).first().phone,
-                           company=db.session.query(Contactdetailsclients).filter_by(id_clients=id_clients).first().company,
-                           password=0, address='123', card='4444-4444-4444-4444', amount=0)
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
+                               id_clients=id_clients,
+                               email=db.session.query(Clients).filter_by(id_clients=id_clients).first().email,
+                               fio=db.session.query(Clients).filter_by(id_clients=id_clients).first().fio,
+                               created=db.session.query(Clients).filter_by(id_clients=id_clients).first().created,
+                               dob=db.session.query(Clients).filter_by(id_clients=id_clients).first().dob,
+                               phone=db.session.query(Contactdetailsclients).filter_by(
+                                   id_clients=id_clients).first().phone,
+                               company=db.session.query(Contactdetailsclients).filter_by(
+                                   id_clients=id_clients).first().company,
+                               password='*',
+                               address=db.session.query(Secretdate).filter_by(
+                                   id_clients=id_clients).first().hash_address,
+                               card=plaintext,
+                               amount=db.session.query(Card).filter_by(id_clients=id_clients).first().amount)
     else:
-        fio = request.form['fio']
-        created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
-        dob = request.form['dob']  # определить формат
-        role = 0
-        email = request.form['email']
-        phone = request.form['phone']
-        company = request.form['company']
-        hash_password = generate_password_hash(request.form['password'])
-        print(hash_password)
-        hash_address = generate_password_hash(request.form['address'])
-        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
-        amount = request.form['amount']
-        new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
-        db.session.add(new_Client)
-        db.session.commit()
-        new_Contactdetailsclients = Contactdetailsclients(id_clients=new_Client.id_clients, phone=phone,
-                                                          company=company)
-        new_Secretdate = Secretdate(id_clients=new_Client.id_clients, hash_password=hash_password,
-                                    hash_address=hash_address)
-        new_Card = Card(id_clients=new_Client.id_clients, hash_card=hash_card, amount=amount)
-        db.session.add(new_Contactdetailsclients)
-        db.session.add(new_Secretdate)
-        db.session.add(new_Card)
-        db.session.commit()
-        return redirect('/all')
+        return 'What are you doing here?'
+
+
+@app.route("/edit2", methods=['POST', 'GET'])
+def edit2():
+    cipher = Salsa20.new(key=secret)
+    fio = request.form['fio']
+    created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
+    dob = request.form['dob']  # определить формат
+    role = 0
+    id_clients = request.form['id_clients']
+    email = request.form['email']
+    phone = request.form['phone']
+    company = request.form['company']
+    hash_address = generate_password_hash(request.form['address'])
+    hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+    amount = request.form['amount']
+    new_Client = Clients.query.filter_by(id_clients=id_clients).first()
+    new_Client.email = email
+    new_Client.fio = fio
+    new_Client.created = created
+    db.session.commit()
+
+    new_Contactdetailsclients = Contactdetailsclients.query.filter_by(id_clients=id_clients).first()
+    new_Contactdetailsclients.phone = phone
+    new_Contactdetailsclients.company = company
+    new_Secretdate = Secretdate.query.filter_by(id_clients=id_clients).first()
+    new_Secretdate.hash_address = hash_address
+    new_Card = Card.query.filter_by(id_clients=id_clients).first()
+    new_Card.hash_card = hash_card
+    new_Card.amount = amount
+    db.session.commit()
+    return redirect('/all')
+
 
 @app.route("/status")
 def status():
@@ -389,21 +448,23 @@ def status():
 @app.route('/id_books', methods=['GET', 'POST'])
 @login_required
 def idbook():
-    id_books = request.form['id_books']
-    date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
-    id_clients = db.session.query(Clients).filter_by(email=request.form['email']).first().id_clients
-    price = db.session.query(Books).filter_by(id_books=id_books).first().price
-    new_Purchases = Purchases(id_books=id_books, id_clients=id_clients,
-                              id_staff=current_user.id_clients, date=date)
-    db.session.add(new_Purchases)
-    db.session.commit()
-    with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-        # Open a cursor to perform database operations
-        with conn.cursor() as cur:
-            cur.execute("UPDATE card set amount = amount - {} where id_clients = {}".format(price, id_clients))
-            cur.execute("UPDATE card set amount = amount + {} where id_clients = {}".format(price, 0))
-            conn.commit()
-    return redirect('/login')
+    if request.method == 'POST':
+        id_books = request.form['id_books']
+        date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
+        id_clients = db.session.query(Clients).filter_by(email=request.form['email']).first().id_clients
+        price = db.session.query(Books).filter_by(id_books=id_books).first().price
+        new_Purchases = Purchases(id_books=id_books, id_clients=id_clients,
+                                  id_staff=current_user.id_clients, date=date)
+        db.session.add(new_Purchases)
+        db.session.commit()
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE card set amount = amount - {} where id_clients = {}".format(price, id_clients))
+                cur.execute("UPDATE card set amount = amount + {} where id_clients = {}".format(price, 0))
+                conn.commit()
+        return redirect('/login')
+    else:
+        return 'What are you doing here?'
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -436,4 +497,5 @@ if __name__ == '__main__':
         firstrun()
     except psycopg2.errors.DuplicateTable:
         pass
+
     app.run(debug=True)

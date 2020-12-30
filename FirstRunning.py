@@ -43,7 +43,7 @@ CREATE TABLE secret_date (
 
 CREATE TABLE card (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
-    hash_card VARCHAR(100) NOT NULL,
+    hash_card TEXT NOT NULL,
     amount FLOAT NOT NULL CHECK (amount >= 0)
 );
 

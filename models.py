@@ -132,7 +132,7 @@ class Card(db.Model):
     __tablename__ = 'card'
 
     id_clients = db.Column(db.Integer, ForeignKey('clients.id_clients', ondelete='CASCADE'), primary_key=True)
-    hash_card = db.Column(db.String(100), nullable=False)
+    hash_card = db.Column(db.Text(), nullable=False)
     amount = db.Column(db.Float(), nullable=False)
 
     def __init__(self, id_clients, hash_card, amount):

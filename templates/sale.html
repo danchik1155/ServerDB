@@ -43,7 +43,7 @@
                 <li class="nav-item" id="del">
                     <a href="del" class="button nav-link">Удаление книги</a>
                 </li>
-                <li class="nav-item" id="pols">
+                <li class="nav-item" id="polss">
                     <a href="all" class="button nav-link">Пользователи</a>
                 </li>
             </ul>
@@ -53,9 +53,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <div class="form-group" id="rol">
-                    <p>Роль: {{ role }}</p>
-                </div>
+
                 <div class="form-group pt-3 pl-3">
                     <p class="pt-2">ФИО: {{ fio }}</p>
                 </div>
@@ -120,29 +118,24 @@
         </div>
     </div>
 
+
     <script>
-        document.getElementById("rol").style.display = "none";
-    </script>
-    <script>
-    if ("{{ role }}" == "Покупатель") {
-        document.getElementById("prod").style.display = "none";
-        document.getElementById("dob").style.display = "none";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "none";
-        document.getElementById("zarp").style.display = "none";
-        document.getElementById("pols").style.display = "none";
-    } else if ("{{ role }}" == "Продавец") {
-        document.getElementById("prod").style.display = "";
-        document.getElementById("dob").style.display = "";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "";
-        document.getElementById("zarp").style.display = "";
-        document.getElementById("pols").style.display = "none";
-    }    
+        if ("{{ role }}" == "Покупатель") {
+            document.getElementById("prod").style.display = "none";
+            document.getElementById("dob").style.display = "none";
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("dolg").style.display = "none";
+            document.getElementById("zarp").style.display = "none";
+            document.getElementById("polss").style.display = "none";
+        } else if ("{{ role }}" == "Продавец") {
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("polss").style.display = "none";
+        }
+
     </script>
     <script>
     function ae(){

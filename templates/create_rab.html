@@ -52,9 +52,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <div class="form-group" id="rol">
-                    <p>Роль: {{ role }}</p>
-                </div>
+
                 <div>
                     <form action="http://127.0.0.1:5000/create_rab" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
                         <div class="form-group px-3 mb-0">
@@ -111,29 +109,28 @@
     </div>
 
     
+
     <script>
-        document.getElementById("rol").style.display = "none";
-    </script>
-    <script>
-    if ("{{ role }}" == "Покупатель") {
-        document.getElementById("prod").style.display = "none";
-        document.getElementById("dob").style.display = "none";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "none";
-        document.getElementById("zarp").style.display = "none";
-        document.getElementById("pols").style.display = "none";
-    } else if ("{{ role }}" == "Продавец") {
-        document.getElementById("prod").style.display = "";
-        document.getElementById("dob").style.display = "";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "";
-        document.getElementById("zarp").style.display = "";
-        document.getElementById("pols").style.display = "none";
-    }    
+        if ("{{ role }}" == "Покупатель") {
+            document.getElementById("prod").style.display = "none";
+            document.getElementById("dob").style.display = "none";
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("dolg").style.display = "none";
+            document.getElementById("zarp").style.display = "none";
+            document.getElementById("pols").style.display = "none";
+        } else if ("{{ role }}" == "Продавец") {
+            document.getElementById("prod").style.display = "";
+            document.getElementById("dob").style.display = "";
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("dolg").style.display = "";
+            document.getElementById("zarp").style.display = "";
+            document.getElementById("pols").style.display = "none";
+        }
+
     </script>
     <script>
         var cc = form.card;
