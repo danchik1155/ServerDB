@@ -53,36 +53,27 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h2 class="title text-center font-weight-bold font-italic">Все пользователи</h2>
-                <div class="form-group" id="rol">
-                    <p>Роль: {{ role }}</p>
-                </div>
                 <div class="form-group pt-3">
                     <p class="pt-2">{{ pols }}</p>
                 </div>
             </div>
         </div>
         <ul class="pagination justify-content-center mr-auto col-md-6 offset-md-3">
-            <li class="page-item">
-                <a href="" class="page-link button nav-link ext">Предыдущая</a>
-            </li>
-            <li class="page-item">
-                <a href="" class="page-link button nav-link ext">1</a>
-            </li>
-            <li class="page-item">
-                <a href="" class="page-link button nav-link ext">2</a>
-            </li>
-            <li class="page-item">
-                <a href="" class="page-link button nav-link ext">3</a>
-            </li>
-            <li class="page-item">
-                <a href="" class="page-link button nav-link ext">Следущая</a>
-            </li>
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if posts.page == page_num %}
+                        <a class="btn mb-4 ml-3 mr-3" href="{{ url_for('users', page=page_num) }}">{{ page_num }}</a>
+                     {% else %}
+                         <a class="btn mb-4 ml-3 mr-3" href="{{ url_for('users', page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                     ...
+                {% endif %}
+            {% endfor %}
         </ul>
     </div>
 
-    <script>
-        document.getElementById("rol").style.display = "none";
-    </script>
+
     <script>
         if ("{{ role }}" == "Покупатель") {
             document.getElementById("prod").style.display = "none";

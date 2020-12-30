@@ -8,7 +8,7 @@ from Crypto.Cipher import Salsa20
 
 from models import db, Clients, Contactdetailsclients, Secretdate, Card, Roles, Posit, Publishers, Purchases, Books, \
     Staff
-from tables import UsersBookTable, BooksTable, PublishersTable
+from tables import UsersBookTable, BooksTable, PublishersTable, Users
 from FirstRunning import firstrun
 
 app = Flask(__name__)
@@ -117,8 +117,9 @@ def cabinet():
             job_title = ''
         return render_template('cabinet.html', fio=current_user.fio,
                                role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
-                               amount=db.session.query(Card).filter_by(
-                                   id_clients=current_user.id_clients).first().amount,
+                               # amount=db.session.query(Card).filter_by(
+                               #    id_clients=current_user.id_clients).first().amount,
+                               amount=10000,
                                book=table,
                                salary=salary,
                                job_title=job_title)
@@ -287,10 +288,11 @@ def deletebook():
                 cur.execute("DELETE FROM books where id_books = {};".format(request.form['id_books']))
         return redirect('/login')
 
+
 @app.route("/search", methods=['POST', 'GET'])
 @login_required
 def search_pg():
-    id_books=request.form['id_books']
+    id_books = request.form['id_books']
     if request.method == 'POST':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
@@ -307,9 +309,34 @@ def search_pg():
         table.border = True
     return render_template('sale.html', search=table)
 
-@app.route('/users')
+
+@app.route('/all', methods=['POST', 'GET'])
 def users():
-    pass
+    All_clients = db.session.query(Clients).all
+    All_contact_details_clients = db.session.query(Contactdetailsclients).all
+    All_secret_date = db.session.query(Secretdate).all
+    All_card = db.session.query(Card).all
+    # table = Users(db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
+    #                                           Contactdetailsclients.phone, Contactdetailsclients.company,
+    #                                           Secretdate.hash_password, Secretdate.hash_address,
+    #                                           Card.hash_card, Card.amount).join(
+    #     Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).join(
+    #     Secretdate, Contactdetailsclients.id_clients == Secretdate.id_clients).join(
+    #     Card, Secretdate.id_clients == Card.id_clients).all())
+    page = request.args.get('page', 1, type=int)
+    posts = db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
+                                   Contactdetailsclients.phone, Contactdetailsclients.company).join(
+        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page, per_page=5)
+    table = Users(db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
+                                   Contactdetailsclients.phone, Contactdetailsclients.company).join(
+        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page, per_page=5).items)
+    print(table)
+    return render_template('all.html', pols=table, posts=posts)
+
+
+@app.route("/edit/<int:id_clients>", methods=['POST', 'GET'])
+def edit(id_clients):
+    return {'status': 'true', 'name': 'TG', 'time': time.asctime(), 'id_clients': id_clients}
 
 
 @app.route("/status")
@@ -337,7 +364,6 @@ def idbook():
     return redirect('/login')
 
 
-
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
@@ -361,6 +387,7 @@ def redirect_to_signin(response):
 @manager.user_loader
 def load_user(user_id):
     return Clients.query.get(user_id)
+
 
 if __name__ == '__main__':
     try:

@@ -9,11 +9,11 @@ class Users(Table):
     dob = Col('Date of birthday')
     phone = Col('Phone')
     company = Col('Company')
-    hash_password = Col('Password')
-    hash_address = Col('Adress')
-    hash_card = Col('Card')
-    amount = Col('Amount')
-    edit = LinkCol('Edit', 'edit', url_kwargs=dict(id='id'))
+    # hash_password = Col('Password')
+    # hash_address = Col('Adress')
+    # hash_card = Col('Card')
+    # amount = Col('Amount')
+    edit = LinkCol('Edit', 'edit', url_kwargs=dict(id_clients='id_clients'))
 
 class UsersBookTable(Table):
     id_clients = Col('ID', show=False)
