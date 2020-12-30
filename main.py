@@ -8,7 +8,7 @@ from Crypto.Cipher import Salsa20
 
 from models import db, Clients, Contactdetailsclients, Secretdate, Card, Roles, Posit, Publishers, Purchases, Books, \
     Staff
-from models import UsersBookTable, BooksTable, PublishersTable
+from tables import UsersBookTable, BooksTable, PublishersTable
 from FirstRunning import firstrun
 
 app = Flask(__name__)
@@ -72,7 +72,7 @@ def registration():
         hash_password = generate_password_hash(request.form['password'])
         print(hash_password)
         hash_address = generate_password_hash(request.form['address'])
-        hash_card = cipher.nonce + cipher.encrypt(request.form['card'])
+        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -106,6 +106,7 @@ def cabinet():
             iitems.append(dict(id_clients=items[i][0], id_purchases=items[i][1], name=items[i][2],
                                publishers_name=items[i][3], year=items[i][4], date=items[i][5]))
         table = UsersBookTable(iitems)
+        table.border = True
         if db.session.query(Staff).filter_by(id_staff=current_user.id_clients).first():
             salary = db.session.query(Posit).filter_by(id_position=db.session.query(Staff).filter_by(
                 id_staff=current_user.id_clients).first().id_position).first().salary
@@ -151,6 +152,7 @@ def sale():
 
 
 @app.route("/book", methods=['POST', 'GET'])
+@login_required
 def book():
     if request.method == 'GET':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
@@ -163,6 +165,7 @@ def book():
         for i in range(len(items)):
             iitems.append(dict(id_publishers=items[i][0], publishers_name=items[i][1]))
         table = PublishersTable(iitems)
+        table.border = True
         return render_template('book.html', сatalog_isd=table)
     if request.method == 'POST':
         name = request.form['name']
@@ -276,6 +279,7 @@ def deletebook():
             iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
                                price=items[i][4]))
         table = BooksTable(iitems)
+        table.border = True
         return render_template('del.html', сatalog=table)
     if request.method == 'POST':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
@@ -284,6 +288,7 @@ def deletebook():
         return redirect('/login')
 
 @app.route("/search", methods=['POST', 'GET'])
+@login_required
 def search_pg():
     id_books=request.form['id_books']
     if request.method == 'POST':
@@ -299,23 +304,12 @@ def search_pg():
             iitems.append(dict(id_books=items[i][0], name=items[i][1], publishers_name=items[i][2], year=items[i][3],
                                price=items[i][4]))
         table = BooksTable(iitems)
+        table.border = True
     return render_template('sale.html', search=table)
 
 @app.route('/users')
 def users():
     pass
-
-    #
-    # with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
-    #     # Open a cursor to perform database operations
-    #     with conn.cursor() as cur:
-    #         cur.execute(f"SELECT id_books, name, publishers_name, year, price FROM books inner join publishers \
-    #                on books.id_publishers=publishers.id_publishers;")
-    #         items = cur.fetchall()
-    #         conn.commit()
-    # iitems = []
-    # for i in range(len(items)):
-    #     iitems.append(dict(name=items[i][0], publishers_name=items[i][1], year=items[i][2], date=items[i][3]))
 
 
 @app.route("/status")
@@ -324,6 +318,7 @@ def status():
 
 
 @app.route('/id_books', methods=['GET', 'POST'])
+@login_required
 def idbook():
     id_books = request.form['id_books']
     date = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
@@ -366,7 +361,6 @@ def redirect_to_signin(response):
 @manager.user_loader
 def load_user(user_id):
     return Clients.query.get(user_id)
-
 
 if __name__ == '__main__':
     try:

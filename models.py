@@ -1,32 +1,8 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from flask_table import Table, Col
 from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
-
-
-class UsersBookTable(Table):
-    id_clients = Col('ID', show=False)
-    id_purchases = Col('Номер сделки')
-    name = Col('Название книги')
-    publishers_name = Col('Издатель')
-    year = Col('Дата издания')
-    date = Col('Дата покупки')
-
-
-class BooksTable(Table):
-    id_books = Col('ID Книги')
-    name = Col('Название книги')
-    publishers_name = Col('Издатель')
-    year = Col('Дата издания')
-    price = Col('Цена')
-
-
-class PublishersTable(Table):
-    id_publishers = Col('ID издателя')
-    publishers_name = Col('Издатель')
-
 
 class Posit(db.Model):
     __tablename__ = 'posit'

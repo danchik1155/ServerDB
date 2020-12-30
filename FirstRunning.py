@@ -1,5 +1,9 @@
 from werkzeug.security import generate_password_hash
 import psycopg2
+from Crypto.Cipher import Salsa20
+
+secret = b'*Thirty-two byte (256 bits) key*'
+cipher = Salsa20.new(key=secret)
 
 def firstrun():
     with psycopg2.connect(dbname='cursach', user='moderator', password='wryipadgjl', host='localhost') as conn:
@@ -101,14 +105,18 @@ INSERT INTO publishers (publishers_name) VALUES ('Просвещение, Мос
 
 INSERT INTO posit (id_position, id_role, job_title, salary) VALUES (0, 1, 'Стажер', 3000), (1, 1,'Продавец-консультант', 12000),(2, 2,'Менеджер', 30000);
 
-BEGIN;
 INSERT INTO clients (id_clients, email, FIO, created, DOB, id_role) VALUES (0, 'urvancev-00@mail.ru', 'Danik Urvantsev', now(), '2001-01-24', 2);
 INSERT INTO contact_details_clients (id_clients, phone, company) VALUES (0,'89877031111', 'Vk');
 INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
- (0, '{generate_password_hash('Danilka1122')}', '{generate_password_hash('Sovetsk')}');
-INSERT INTO card (id_clients, hash_card, amount) VALUES (0, '{generate_password_hash('4444 4444 4444 4444')}', 10000);
+ (0, '{generate_password_hash('Danilka1122')}', 'Sovetsk');''')
+
+            cur.execute(
+                "INSERT INTO card(id_clients, hash_card, amount) VALUES (%s,%s,%s);"
+                , (0, cipher.nonce + cipher.encrypt(bytes('4444-4444-4444-4444', 'utf-8')),10000))
+
+            cur.execute('''
 INSERT INTO staff (id_staff, id_position) VALUES (0, 2);
-COMMIT;
 GRANT ALL PRIVILEGES on all tables in schema public to editor;
-GRANT ALL PRIVILEGES on all sequences in schema public to editor;
-''')
+GRANT ALL PRIVILEGES on all sequences in schema public to editor;''')
+        conn.commit()
+

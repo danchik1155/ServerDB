@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='stylelog_reg.css')}}">
 
-    <title>Создание работника</title>
+    <title>Редактировать</title>
 
 </head>
 
@@ -36,7 +36,7 @@
                 <li class="nav-item" id="s_pok">
                     <a href="create_pok" class="button nav-link">Создание покупателя</a>
                 </li>
-                <li class="nav-item active" id="s_rab">
+                <li class="nav-item" id="s_rab">
                     <a href="create_rab" class="button nav-link">Создание работника</a>
                 </li>
                 <li class="nav-item" id="del">
@@ -56,26 +56,42 @@
                     <p>Роль: {{ role }}</p>
                 </div>
                 <div>
-                    <form action="http://127.0.0.1:5000/create_rab" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
+                    <form action="http://127.0.0.1:5000/edit" method="post" name="form" class="py-3 needs-validation" style="background-color: #fff;" novalidate>
+                        <div class="form-group px-3">
+                            <label for="IDClients" class="col-form-label col-form-label-md pt-0">id клиента</label>
+                            <input type="text" name="id_clients" class="form-control form-control-lg" id="IDClients" required disabled>
+                        </div>
+                        <div class="form-group px-3">
+                            <label for="InputEmail" class="col-form-label col-form-label-md pt-0">Email</label>
+                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
+                        </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputName" class="col-form-label col-form-label-lg pt-0">ФИО</label>
                             <input type="text" name="fio" class="form-control form-control-lg" id="InputName" required>
                         </div>
-                        <div class="form-group px-3">
-                            <label for="InputTel" class="col-form-label col-form-label-md pt-0">Email</label>
-                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
+                        <div class="form-group px-3 mb-0">
+                            <label for="InputCr" class="col-form-label col-form-label-lg pt-0">Создан</label>
+                            <input type="date" name="created" class="form-control form-control-lg" id="InputCr" required>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputDOB" class="col-form-label col-form-label-lg pt-0">Дата рождения</label>
                             <input type="date" name="dob" class="form-control form-control-lg" id="InputDOB" required>
                         </div>
-                        <div class="form-group px-3 mb-3">
-                            <label for="InputRole" class="col-form-label col-form-label-lg pt-0">Роль</label>
-                            <select name="role" class="form-control form-control-lg" id="InputRole">
-                                <option name="Продавец-консультант">Продавец-консультант</option>
-                                <option name="Менеджер">Менеджер</option>
-                                <option name="Стажер">Стажер</option>
-                            </select>
+                        <div class="form-group px-3 mb-0">
+                            <label for="InputTel" class="col-form-label col-form-label-lg pt-0">Телефон</label>
+                            <input type="text" name="phone" class="phone form-control form-control-lg" id="InputTel" required>
+                        </div>
+                        <div class="form-group px-3 mb-0">
+                            <label for="InputComp" class="col-form-label col-form-label-lg pt-0">Компания</label>
+                            <input type="text" name="company" class="form-control form-control-lg" id="InputComp" required>
+                        </div>
+                        <div class="form-group px-3 mb-0">
+                            <label for="InputPassword1" class="col-form-label col-form-label-lg">Пароль</label>
+                            <input type="password" name="password" class="form-control form-control-lg" id="InputPassword1" required>
+                        </div>
+                        <div class="form-group px-3 mb-0">
+                            <label for="InputAdress" class="col-form-label col-form-label-lg pt-0">Адрес</label>
+                            <input type="text" name="address" class="form-control form-control-lg" id="InputAdress" required>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputCard" class="col-form-label col-form-label-lg pt-0">Карта</label>
@@ -85,24 +101,8 @@
                             <label for="sum" class="col-form-label col-form-label-md pt-0">Количество денег на карте</label>
                             <input type="number" name="amount" class="form-control form-control-lg" id="sum" required>
                         </div>
-                        <div class="form-group px-3 mb-0">
-                            <label for="InputAdress" class="col-form-label col-form-label-lg pt-0">Адрес</label>
-                            <input type="text" name="address" class="form-control form-control-lg" id="InputAdress" required>
-                        </div>
-                        <div class="form-group px-3 mb-0">
-                                <label for="InputComp" class="col-form-label col-form-label-lg pt-0">Компания</label>
-                                <input type="text" name="company" class="form-control form-control-lg" id="InputComp" required>
-                            </div>
-                        <div class="form-group px-3 mb-0">
-                            <label for="InputPassword1" class="col-form-label col-form-label-lg">Ваш пароль</label>
-                            <input type="password" name="password" class="form-control form-control-lg" id="InputPassword1" required>
-                        </div>
-                        <div class="form-group px-3 mb-0">
-                            <label for="InputTel" class="col-form-label col-form-label-lg pt-0">Телефон</label>
-                            <input type="text" name="phone" class="phone form-control form-control-lg" id="InputTel" required>
-                        </div>
                         <button type="submit" class="btn text-white w-25 mt-2 ml-3">
-                            Создать
+                            Изменить
                         </button>
                     </form>
                 </div>
@@ -112,28 +112,53 @@
 
     
     <script>
+        var pol = document.getElementById('IDClients');
+        var pol2 = document.getElementById('InputEmail');
+        var pol3 = document.getElementById('InputName');
+        var pol4 = document.getElementById('InputCr');
+        var pol5 = document.getElementById('InputDOB');
+        var pol6 = document.getElementById('InputTel');
+        var pol7 = document.getElementById('InputPassword1');
+        var pol8 = document.getElementById('InputAdress');
+        var pol9 = document.getElementById('InputCard');
+        var pol10 = document.getElementById('sum');
+        var pol11 = document.getElementById('InputComp');
+        pol.value = {{ id_clients }};
+        pol2.value = {{ email }};
+        pol3.value = {{ fio }};
+        pol4.value = {{ created }};
+        pol5.value = {{ dob }};
+        pol6.value = {{ phone }};
+        pol7.value = {{ password }};
+        pol8.value = {{ address }};
+        pol9.value = {{ card }};
+        pol10.value = {{ amount }};
+        pol11.value = {{ company }};
+    </script>
+    <script>
         document.getElementById("rol").style.display = "none";
     </script>
     <script>
-    if ("{{ role }}" == "Покупатель") {
-        document.getElementById("prod").style.display = "none";
-        document.getElementById("dob").style.display = "none";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "none";
-        document.getElementById("zarp").style.display = "none";
-        document.getElementById("pols").style.display = "none";
-    } else if ("{{ role }}" == "Продавец") {
-        document.getElementById("prod").style.display = "";
-        document.getElementById("dob").style.display = "";
-        document.getElementById("s_pok").style.display = "none";
-        document.getElementById("s_rab").style.display = "none";
-        document.getElementById("del").style.display = "none";
-        document.getElementById("dolg").style.display = "";
-        document.getElementById("zarp").style.display = "";
-        document.getElementById("pols").style.display = "none";
-    }    
+        if ("{{ role }}" == "Покупатель") {
+            document.getElementById("prod").style.display = "none";
+            document.getElementById("dob").style.display = "none";
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("dolg").style.display = "none";
+            document.getElementById("zarp").style.display = "none";
+            document.getElementById("pols").style.display = "none";
+        } else if ("{{ role }}" == "Продавец") {
+            document.getElementById("prod").style.display = "";
+            document.getElementById("dob").style.display = "";
+            document.getElementById("s_pok").style.display = "none";
+            document.getElementById("s_rab").style.display = "none";
+            document.getElementById("del").style.display = "none";
+            document.getElementById("dolg").style.display = "";
+            document.getElementById("zarp").style.display = "";
+            document.getElementById("pols").style.display = "none";
+        }
+
     </script>
     <script>
         var cc = form.card;
