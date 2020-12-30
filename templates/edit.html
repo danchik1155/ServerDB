@@ -22,31 +22,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="cabinet">Личный кабинет</a>
-                </li>
-                <li class="nav-item" id="prod">
-                    <a href="sale" class="button nav-link">Продажа</a>
-                </li>
-                <li class="nav-item" id="dob">
-                    <a href="book" class="button nav-link">Добавление книги</a>
-                </li>
-                <li class="nav-item" id="s_pok">
-                    <a href="create_pok" class="button nav-link">Создание покупателя</a>
-                </li>
-                <li class="nav-item" id="s_rab">
-                    <a href="create_rab" class="button nav-link">Создание работника</a>
-                </li>
-                <li class="nav-item" id="del">
-                    <a href="del" class="button nav-link">Удаление книги</a>
-                </li>
-                <li class="nav-item" id="pols">
-                    <a href="all" class="button nav-link">Пользователи</a>
-                </li>
-            </ul>
-        </div>
+
     </nav>
 
     <div class="container">
@@ -63,7 +39,7 @@
                         </div>
                         <div class="form-group px-3">
                             <label for="InputEmail" class="col-form-label col-form-label-md pt-0">Email</label>
-                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required>
+                            <input type="email" name="email" class="form-control form-control-lg" id="InputEmail" required disabled>
                         </div>
                         <div class="form-group px-3 mb-0">
                             <label for="InputName" class="col-form-label col-form-label-lg pt-0">ФИО</label>
@@ -124,16 +100,16 @@
         var pol10 = document.getElementById('sum');
         var pol11 = document.getElementById('InputComp');
         pol.value = {{ id_clients }};
-        pol2.value = {{ email }};
-        pol3.value = {{ fio }};
-        pol4.value = {{ created }};
-        pol5.value = {{ dob }};
-        pol6.value = {{ phone }};
-        pol7.value = {{ password }};
-        pol8.value = {{ address }};
-        pol9.value = {{ card }};
-        pol10.value = {{ amount }};
-        pol11.value = {{ company }};
+        pol2.value = '{{ email }}';
+        pol3.value = '{{ fio }}';
+        pol4.value = '{{ created }}';
+        pol5.value = '{{ dob }}';
+        pol6.value = '{{ phone }}';
+        pol7.value = '{{ password }}';
+        pol8.value = '{{ address }}';
+        pol9.value = '{{ card }}';
+        pol10.value = '{{ amount }}';
+        pol11.value = '{{ company }}';
     </script>
     <script>
         document.getElementById("rol").style.display = "none";

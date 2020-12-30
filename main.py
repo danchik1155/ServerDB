@@ -149,7 +149,8 @@ def sale():
         else:
             price = 0
         return render_template('sale.html', id_books=id_books, fio=current_user.fio, сatalog=table,
-                               price=price)
+                               price=price,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
 
 
 @app.route("/book", methods=['POST', 'GET'])
@@ -167,7 +168,8 @@ def book():
             iitems.append(dict(id_publishers=items[i][0], publishers_name=items[i][1]))
         table = PublishersTable(iitems)
         table.border = True
-        return render_template('book.html', сatalog_isd=table)
+        return render_template('book.html', сatalog_isd=table,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
         name = request.form['name']
         id_publishers = request.form['id_publisher']
@@ -194,7 +196,8 @@ def publisher_pg():
 @login_required
 def create_pok():
     if request.method == 'GET':
-        return render_template('create_pok.html')
+        return render_template('create_pok.html',
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
@@ -226,7 +229,8 @@ def create_pok():
 @login_required
 def create_rab():
     if request.method == 'GET':
-        return render_template('create_rab.html')
+        return render_template('create_rab.html',
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
         fio = request.form['fio']
         created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
@@ -281,7 +285,8 @@ def deletebook():
                                price=items[i][4]))
         table = BooksTable(iitems)
         table.border = True
-        return render_template('del.html', сatalog=table)
+        return render_template('del.html', сatalog=table,
+                               role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
     if request.method == 'POST':
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             with conn.cursor() as cur:
@@ -325,19 +330,56 @@ def users():
     #     Card, Secretdate.id_clients == Card.id_clients).all())
     page = request.args.get('page', 1, type=int)
     posts = db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
-                                   Contactdetailsclients.phone, Contactdetailsclients.company).join(
+                             Contactdetailsclients.phone, Contactdetailsclients.company).join(
         Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page, per_page=5)
     table = Users(db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
                                    Contactdetailsclients.phone, Contactdetailsclients.company).join(
-        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page, per_page=5).items)
+        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page,
+                                                                                                per_page=5).items)
     print(table)
-    return render_template('all.html', pols=table, posts=posts)
+    return render_template('all.html', pols=table, posts=posts,
+                           role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name)
 
 
 @app.route("/edit/<int:id_clients>", methods=['POST', 'GET'])
 def edit(id_clients):
-    return {'status': 'true', 'name': 'TG', 'time': time.asctime(), 'id_clients': id_clients}
-
+    if request.method == 'GET':
+        return render_template('edit.html',
+                           role=db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name,
+                           id_clients=id_clients,
+                           email=db.session.query(Clients).filter_by(id_clients=id_clients).first().email,
+                           fio=db.session.query(Clients).filter_by(id_clients=id_clients).first().fio,
+                           created=db.session.query(Clients).filter_by(id_clients=id_clients).first().created,
+                           dob=db.session.query(Clients).filter_by(id_clients=id_clients).first().dob,
+                           phone=db.session.query(Contactdetailsclients).filter_by(id_clients=id_clients).first().phone,
+                           company=db.session.query(Contactdetailsclients).filter_by(id_clients=id_clients).first().company,
+                           password=0, address='123', card='4444-4444-4444-4444', amount=0)
+    else:
+        fio = request.form['fio']
+        created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
+        dob = request.form['dob']  # определить формат
+        role = 0
+        email = request.form['email']
+        phone = request.form['phone']
+        company = request.form['company']
+        hash_password = generate_password_hash(request.form['password'])
+        print(hash_password)
+        hash_address = generate_password_hash(request.form['address'])
+        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        amount = request.form['amount']
+        new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
+        db.session.add(new_Client)
+        db.session.commit()
+        new_Contactdetailsclients = Contactdetailsclients(id_clients=new_Client.id_clients, phone=phone,
+                                                          company=company)
+        new_Secretdate = Secretdate(id_clients=new_Client.id_clients, hash_password=hash_password,
+                                    hash_address=hash_address)
+        new_Card = Card(id_clients=new_Client.id_clients, hash_card=hash_card, amount=amount)
+        db.session.add(new_Contactdetailsclients)
+        db.session.add(new_Secretdate)
+        db.session.add(new_Card)
+        db.session.commit()
+        return redirect('/all')
 
 @app.route("/status")
 def status():

@@ -70,10 +70,6 @@
                 <div class="form-group">
                     <p>Счёт: {{ amount }}</p>
                 </div>
-                <div class="form-group">
-                    <p>Книги: {{ book }}</p>
-                </div>
-
                 <form action="http://127.0.0.1:5000/money" method="post" name="form" id="form_book" class="py-1 back_w needs-validation" novalidate>
                     <div class="form-group px-3">
                         <label for="money" class="col-form-label col-form-label-md pt-0">Пополнить счет</label>
@@ -83,6 +79,11 @@
                         Пополнить
                     </button>
                 </form>
+                <div class="form-group">
+                    <p>Книги: {{ book }}</p>
+                </div>
+
+
             </div>
         </div>
         <ul class="navbar-nav mr-auto col-md-6 offset-md-3">
