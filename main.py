@@ -43,9 +43,8 @@ def login_pg():
             login_user(user)
             with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
                 with conn.cursor() as cur:
-                    cur.execute(f"INSERT INTO sessions (id_clients, session_date) "
-                                f"VALUES ({current_user.id_clients},"
-                                f"'{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}');")
+                    cur.execute("INSERT INTO sessions (id_clients, session_date) VALUES (%d,'%s');" %
+                                (current_user.id_clients, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
                     conn.commit()
             next_page = request.args.get('next')
             if next_page is not None:
@@ -336,8 +335,8 @@ def deletebook():
 @app.route("/search", methods=['POST', 'GET'])
 @login_required
 def search_pg():
-    id_books = request.form['id_books']
     if request.method == 'POST':
+        id_books = request.form['id_books']
         with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
             # Open a cursor to perform database operations
             with conn.cursor() as cur:
@@ -367,7 +366,7 @@ def users():
         Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page, per_page=5)
     table = Users(db.session.query(Clients.id_clients, Clients.email, Clients.fio, Clients.created, Clients.dob,
                                    Contactdetailsclients.phone, Contactdetailsclients.company).join(
-        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).paginate(page=page,
+        Contactdetailsclients, Clients.id_clients == Contactdetailsclients.id_clients).order_by(Clients.id_clients).paginate(page=page,
                                                                                                 per_page=5).items)
     table.border = True
     return render_template('all.html', pols=table, posts=posts,
@@ -410,34 +409,37 @@ def edit(id_clients):
 
 @app.route("/edit2", methods=['POST', 'GET'])
 def edit2():
-    cipher = Salsa20.new(key=secret)
-    fio = request.form['fio']
-    created = time.strftime('%d/%m/%Y', time.localtime())  # использовать дату
-    dob = request.form['dob']  # определить формат
-    role = 0
-    id_clients = request.form['id_clients']
-    email = request.form['email']
-    phone = request.form['phone']
-    company = request.form['company']
-    hash_address = generate_password_hash(request.form['address'])
-    hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
-    amount = request.form['amount']
-    new_Client = Clients.query.filter_by(id_clients=id_clients).first()
-    new_Client.email = email
-    new_Client.fio = fio
-    new_Client.created = created
-    db.session.commit()
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
+    if request.method == 'POST':
+        cipher = Salsa20.new(key=secret)
+        fio = request.form['fio']
+        created = time.strftime('%d/%m/%Y', time.localtime())
+        id_clients = request.form['id_clients']
+        email = request.form['email']
+        phone = request.form['phone']
+        company = request.form['company']
+        hash_address = generate_password_hash(request.form['address'])
+        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        amount = request.form['amount']
+        new_Client = Clients.query.filter_by(id_clients=id_clients).first()
+        new_Client.email = email
+        new_Client.fio = fio
+        new_Client.created = created
+        db.session.commit()
 
-    new_Contactdetailsclients = Contactdetailsclients.query.filter_by(id_clients=id_clients).first()
-    new_Contactdetailsclients.phone = phone
-    new_Contactdetailsclients.company = company
-    new_Secretdate = Secretdate.query.filter_by(id_clients=id_clients).first()
-    new_Secretdate.hash_address = hash_address
-    new_Card = Card.query.filter_by(id_clients=id_clients).first()
-    new_Card.hash_card = hash_card
-    new_Card.amount = amount
-    db.session.commit()
-    return redirect('/all')
+        new_Contactdetailsclients = Contactdetailsclients.query.filter_by(id_clients=id_clients).first()
+        new_Contactdetailsclients.phone = phone
+        new_Contactdetailsclients.company = company
+        new_Secretdate = Secretdate.query.filter_by(id_clients=id_clients).first()
+        new_Secretdate.hash_address = hash_address
+        new_Card = Card.query.filter_by(id_clients=id_clients).first()
+        new_Card.hash_card = hash_card
+        new_Card.amount = amount
+        db.session.commit()
+        return redirect('/all')
+    else:
+        return 'What are you doing here?'
 
 
 @app.route("/status")
@@ -472,9 +474,8 @@ def idbook():
 def logout():
     with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
         with conn.cursor() as cur:
-            cur.execute(f"UPDATE sessions SET session_logout = "
-                        f"'{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}' "
-                        f"WHERE id_clients={current_user.id_clients}")
+            cur.execute("UPDATE sessions SET session_logout = '%s' WHERE id_clients=%d" %
+                        (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()), current_user.id_clients))
             conn.commit()
     logout_user()
     return redirect('/login')

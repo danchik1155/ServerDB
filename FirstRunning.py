@@ -101,9 +101,13 @@ CREATE TRIGGER deleted_book BEFORE DELETE ON books
 
 INSERT INTO roles (id_role, name) VALUES (0, 'Покупатель'), (1, 'Продавец'), (2, 'Менеджер');
 
+ALTER SEQUENCE roles_id_role_seq START WITH 3;
+
 INSERT INTO publishers (publishers_name) VALUES ('Просвещение, Москва'), ('Новое, СПБ');
 
 INSERT INTO posit (id_position, id_role, job_title, salary) VALUES (0, 1, 'Стажер', 3000), (1, 1,'Продавец-консультант', 12000),(2, 2,'Менеджер', 30000);
+
+ALTER SEQUENCE posit_id_position_seq START WITH 3;
 
 INSERT INTO clients (id_clients, email, FIO, created, DOB, id_role) VALUES (0, 'urvancev-00@mail.ru', 'Danik Urvantsev', now(), '2001-01-24', 2);
 INSERT INTO contact_details_clients (id_clients, phone, company) VALUES (0,'89877031111', 'Vk');
@@ -111,8 +115,8 @@ INSERT INTO secret_date (id_clients, hash_password, hash_address) VALUES\
  (0, '{generate_password_hash('Danilka1122')}', 'Sovetsk');''')
 
             cur.execute(
-                "INSERT INTO card(id_clients, hash_card, amount) VALUES (%s,%s,%s);"
-                , (0, cipher.nonce + cipher.encrypt(bytes('4444-4444-4444-4444', 'utf-8')),10000))
+                "INSERT INTO card(id_clients, hash_card, amount) VALUES (%s,%s,%s);" %
+                (0, cipher.nonce + cipher.encrypt(bytes('4444-4444-4444-4444', 'utf-8')), 10000))
 
             cur.execute('''
 INSERT INTO staff (id_staff, id_position) VALUES (0, 2);
