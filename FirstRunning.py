@@ -29,6 +29,8 @@ CREATE TABLE clients (
     id_role INT NOT NULL REFERENCES roles (id_role) ON DELETE CASCADE
 );
 
+CREATE INDEX mailindex on clients USING hash (email);
+
 CREATE TABLE contact_details_clients (
     id_clients INT PRIMARY KEY REFERENCES clients (id_clients) ON DELETE CASCADE,
     phone VARCHAR(100) NOT NULL,
