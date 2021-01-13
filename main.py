@@ -71,8 +71,8 @@ def registration():
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
         print(hash_password)
-        hash_address = generate_password_hash(request.form['address'])
-        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        hash_address = request.form['address']
+        hash_card = str(cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8')))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -240,7 +240,7 @@ def create_pok():
         phone = request.form['phone']
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
-        hash_address = generate_password_hash(request.form['address'])
+        hash_address = request.form['address']
         hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
@@ -284,8 +284,8 @@ def create_rab():
         phone = request.form['phone']
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
-        hash_address = generate_password_hash(request.form['address'])
-        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        hash_address = request.form['address']
+        hash_card = str(cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8')))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
@@ -419,8 +419,8 @@ def edit2():
         email = request.form['email']
         phone = request.form['phone']
         company = request.form['company']
-        hash_address = generate_password_hash(request.form['address'])
-        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        hash_address = request.form['address']
+        hash_card = str(cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8')))
         amount = request.form['amount']
         new_Client = Clients.query.filter_by(id_clients=id_clients).first()
         new_Client.email = email
