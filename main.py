@@ -407,6 +407,20 @@ def edit(id_clients):
         return 'What are you doing here?'
 
 
+@app.route("/delus/<int:id_clients>", methods=['POST', 'GET'])
+@login_required
+def deleteus(id_clients):
+    if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
+        return 'What are you doing here?'
+    if request.method == 'POST':
+        with psycopg2.connect(dbname='cursach', user=psycopglog, password=psycopgpass, host='localhost') as conn:
+            with conn.cursor() as cur:
+                cur.execute("DELETE FROM clients where id_clients = {} ;".format(id_clients))
+        return redirect('/login')
+    else:
+        return 'What are you doing here?'
+
+
 @app.route("/edit2", methods=['POST', 'GET'])
 def edit2():
     if db.session.query(Roles).filter_by(id_role=current_user.id_role).first().name != "Менеджер":
