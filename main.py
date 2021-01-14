@@ -241,7 +241,7 @@ def create_pok():
         company = request.form['company']
         hash_password = generate_password_hash(request.form['password'])
         hash_address = request.form['address']
-        hash_card = cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8'))
+        hash_card = str(cipher.nonce + cipher.encrypt(bytes(request.form['card'], 'utf-8')))
         amount = request.form['amount']
         new_Client = Clients(email=email, fio=fio, created=created, dob=dob, id_role=role)
         db.session.add(new_Client)
